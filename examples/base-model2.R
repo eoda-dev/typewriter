@@ -63,3 +63,11 @@ my_api_model(.x = external_data)
 
 external_data |>
   model_validate(my_api_model)
+
+# ---
+blocks <- roxygen2::parse_file("R/utils.R")
+param_tags <- roxygen2::block_get_tags(blocks[[1]], "param")
+
+purrr::map(param_tags, ~ list(n = .x$val$name, d = .x$val$description))
+
+# roxygen2::block_has_tags(blocks)

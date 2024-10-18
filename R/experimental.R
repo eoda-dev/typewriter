@@ -48,7 +48,8 @@ base_model2 <- function(fields = list(), ...,
             i = "type: {typeof(obj_value)}",
             i = "length: {length(obj_value)}",
             x = rlang::quo_text(check_type_fn)
-          ) , .frame = rlang::current_env()
+          ),
+          .frame = rlang::current_env()
         )
       }
     }
