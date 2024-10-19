@@ -1,17 +1,34 @@
 # ---
+#' Create a model field
+#' @param fn A type check function.
+#' @param default A default value for the field.
+#' @param alias,... **not used** at the moment
+#' @export
 model_field <- function(fn, default = NA, alias = NULL, ...) {
   l <- as.list(environment())
   return(structure(c(l, list(...)), class = CLASS_RDANTIC_MODEL_FIELD))
 }
 
-
 # ---
+#' Create a model config object
+#' @param allow_extra description
+#' @param str_to_lower description
+#' @returns A model config object that can be used in [base_model()].
+#' @export
 model_config <- function(allow_extra = FALSE,
                          str_to_lower = FALSE, ...) {
-  return(c(as.list(environment()), list(...)))
+  return(structure(c(as.list(environment()), list(...)), class = CLASS_MODEL_CONFIG))
 }
 
 # ---
+#' Create a model factory function
+#' @param fields description
+#' @param ... description
+#' @param .model_config description
+#' @param .validators_before description
+#' @param .validators_after description
+#' @returns A model factory function.
+#' @export
 base_model <- function(fields = list(), ...,
                        .model_config = model_config(),
                        .validators_before = list(),
@@ -43,11 +60,11 @@ base_model <- function(fields = list(), ...,
       if (isFALSE(check_type_fn(obj_value))) {
         cli::cli_abort(
           c(
-            x = "Type check failed.",
-            i = "{name} = {rlang::quo_text(obj_value)}",
+            "Type check failed.",
+            x = "{name} = {rlang::quo_text(obj_value)}",
             i = "type: {typeof(obj_value)}",
             i = "length: {length(obj_value)}",
-            x = rlang::quo_text(check_type_fn)
+            x = "{rlang::quo_text(check_type_fn)}"
           ),
           .frame = rlang::current_env()
         )
@@ -85,6 +102,10 @@ base_model <- function(fields = list(), ...,
 }
 
 # ---
+#' Check function arguments
+#' @param ... description
+#' @returns The caller environment.
+#' @export
 check_args <- function(...) {
   fields <- list(...)
   if (length(fields) == 0) {
@@ -105,6 +126,10 @@ check_args <- function(...) {
 }
 
 # ---
+#' Validate an object
+#' @param obj A list or a data.frame.
+#' @param model_fn A model factory function created with [base_model()].
+#' @export
 model_validate <- function(obj, model_fn) {
   model_fn(.x = obj)
 }

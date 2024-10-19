@@ -32,91 +32,46 @@ devtools::install_github("eodaGmbH/rdantic")
 
 ## Examples
 
-### Models
-
 ```{r example}
 library(rdantic)
 library(rlang)
 
+# ---
+# Models
 numbers <- base_model(
   a = is_integer,
   b = is_integer
 )
 
 numbers(a = 2L, b = 4L)
-
 try(numbers(a = 2L, b = 4.5))
 
-my_model <- base_model(
-  convert_me_to_camel_case = is_scalar_character,
-  a = is_optional(is_integer),
-  b = is_integer,
-  txt = is_scalar_character
-)
-
-(m <- my_model(convert_me_to_camel_case = "okay", b = 10L, txt = "Hi"))
-
-m |> model_dump(exclude_null = TRUE, camels = TRUE)
-
-m |> model_dump(include = c("a", "b"))
-```
-
-### Type safety inside functions
-
-```{r}
-add_two_numbers <- function(a, b) {
-  validate_args(
-    a = is_scalar_double,
-    b = is_scalar_double
-  )
+# ---
+# Functions
+f <- function(
+    a = is_integer,
+    b = model_field(is_integer, default = 10L)
+) {
+  check_args()
   a + b
 }
 
-add_two_numbers(2, 4)
+f(5L)
+f(5L, 15L)
+try(f(5, 5))
 
-try(add_two_numbers(2, c(2, 4)))
-
-devide_two_numbers <- function(a, b) {
-  validate_args(
-    a = is_double,
-    b = ~ is_double(.x) & .x != 0
-  )
-  a / b
-}
-
-devide_two_numbers(4, 2)
-
-try(devide_two_numbers(4, 0))
-
-# Add validators
-
-devide_two_numbers <- function(a, b) {
-  validate_args(
-    a = is_double,
-    b = is_double,
-    .validators_after = list(
-      b = ~ ifelse(.x == 0, 1, .x)
-    )
-  )
-  a / b
-}
-
-devide_two_numbers(4, 0)
-```
-
-### Get settings from env vars
-
-```{r}
-Sys.setenv(POSTGRES_USERNAME = "postgres")
-Sys.setenv(POSTGRES_PASSWORD = "superSecret!")
-Sys.setenv(POSTGRES_PORT = 15432)
-
+# ---
+# Settings
 postgres_settings <- base_settings(
   username = as.character,
   password = as.character,
   port = as.integer,
   .prefix = "POSTGRES"
 )
+
+Sys.setenv(POSTGRES_USERNAME = "postgres")
+Sys.setenv(POSTGRES_PASSWORD = "superSecret!")
+Sys.setenv(POSTGRES_PORT = 15432)
 
 postgres_settings()
 
