@@ -62,7 +62,10 @@ external_data <- list(
 my_api_model(.x = external_data)
 
 external_data |>
-  model_validate(my_api_model)
+  model_validate(my_api_model) |> model_dump2(exclude = "address", by_alias = TRUE)
+
+# ---
+
 
 # ---
 blocks <- roxygen2::parse_file("R/utils.R")

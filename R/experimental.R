@@ -1,7 +1,7 @@
 # ---
-model_field <- function(fn, default = NA, ...) {
+model_field <- function(fn, default = NA, alias = NULL, ...) {
   l <- as.list(environment())
-  return(c(l, list(...)))
+  return(structure(c(l, list(...)), class = CLASS_RDANTIC_MODEL_FIELD))
 }
 
 
@@ -68,14 +68,18 @@ base_model2 <- function(fields = list(), ...,
       obj <- purrr::keep_at(obj, names(fields))
     }
 
-    return(structure(obj, fields = fields, class = c("rdantic_model")))
+    if (is.data.frame(obj)) {
+      return(obj)
+    }
+
+    return(structure(obj, fields = fields, class = CLASS_RDANTIC))
   }))
 
   return(
     structure(
       model_fn,
       fields = fields,
-      class = c(class(model_fn), "rdantic_base_model")
+      class = CLASS_RDANTIC_MODEL
     )
   )
 }
@@ -92,7 +96,7 @@ check_args <- function(...) {
   e <- rlang::caller_env()
   for (name in names(e)) {
     value <- e[[name]]
-    if (is.list(value)) {
+    if (inherits(value, CLASS_RDANTIC_MODEL_FIELD)) {
       e[[name]] <- value$default
     }
   }
@@ -107,7 +111,7 @@ model_validate <- function(obj, model_fn) {
 
 # ---
 #' @export
-print.rdantic_model <- function(x, ...) {
+print.rdantic <- function(x, ...) {
   print(x[seq_along(x)])
   return(invisible(x))
 }
@@ -128,4 +132,23 @@ discard_all <- function(x, fn = rlang::is_na) {
 map_items <- function(x, fn) {
   purrr::map2(names(x), x, fn) |>
     rlang::set_names(names(x))
+}
+
+# ---
+model_dump2 <- function(obj,
+                       exclude = NULL,
+                       include = NULL,
+                       exclude_na = FALSE,
+                       exclude_null = FALSE,
+                       by_alias = FALSE,
+                       keys_to_camel_case = FALSE) {
+  fields <- model_fields(obj)
+
+  if (is_not_null(exclude)) obj <- purrr::discard_at(obj, exclude)
+  if (is_not_null(include)) obj <- purrr::keep_at(obj, include)
+  if (isTRUE(exclude_na)) obj <- discard_all(obj, rlang::is_na)
+  if (isTRUE(exclude_null)) obj <- discard_all(obj, rlang::is_null)
+  if (isTRUE(keys_to_camel_case)) obj <- keys_to_camel_case(obj)
+
+  return(obj)
 }
