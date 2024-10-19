@@ -1,4 +1,5 @@
 test_that("Check derive model", {
+  # Prepare
   template <- list(
     a_character = "hello",
     a_model = lm(mpg ~ cyl, data = mtcars),
@@ -7,9 +8,10 @@ test_that("Check derive model", {
     an_integer = 12L
   )
 
-
+  # Act
   my_model <- derive_model(template)
 
+  # Assert
   expect_equal(
     list(
       a_character = "test",
@@ -18,13 +20,14 @@ test_that("Check derive model", {
       a_number = 234.1,
       an_integer = 1L
     ),
-    my_model(
+    to_raw_list(
+      my_model(
       a_character = "test",
       a_model = lm(cyl ~ mpg, data = mtcars),
       a_dataframe = iris,
       a_number = 234.1,
       an_integer = 1L
-    )
+    ))
   )
 
   expect_error(

@@ -12,7 +12,7 @@ model_config <- function(allow_extra = FALSE,
 }
 
 # ---
-base_model2 <- function(fields = list(), ...,
+base_model <- function(fields = list(), ...,
                         .model_config = model_config(),
                         .validators_before = list(),
                         .validators_after = list()) {
@@ -101,7 +101,7 @@ check_args <- function(...) {
     }
   }
 
-  base_model2(fields)(.x = e)
+  base_model(fields)(.x = e)
 }
 
 # ---
@@ -135,7 +135,7 @@ map_items <- function(x, fn) {
 }
 
 # ---
-model_dump2 <- function(obj,
+model_dump <- function(obj,
                        exclude = NULL,
                        include = NULL,
                        exclude_na = FALSE,
