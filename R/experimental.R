@@ -13,9 +13,9 @@ model_config <- function(allow_extra = FALSE,
 
 # ---
 base_model <- function(fields = list(), ...,
-                        .model_config = model_config(),
-                        .validators_before = list(),
-                        .validators_after = list()) {
+                       .model_config = model_config(),
+                       .validators_before = list(),
+                       .validators_after = list()) {
   fields <- utils::modifyList(fields, list(...), keep.null = TRUE)
   fields <- purrr::map(fields, ~ {
     if (inherits(.x, "function")) {
@@ -117,24 +117,6 @@ print.rdantic <- function(x, ...) {
 }
 
 # ---
-discard_all <- function(x, fn = rlang::is_na) {
-  for (name in names(x)) {
-    value <- x[[name]]
-    if (is.list(value)) {
-      x[[name]] <- discard_all(value, fn)
-    }
-  }
-
-  return(purrr::discard(x, fn))
-}
-
-# ---
-map_items <- function(x, fn) {
-  purrr::map2(names(x), x, fn) |>
-    rlang::set_names(names(x))
-}
-
-# ---
 model_dump <- function(obj,
                        exclude = NULL,
                        include = NULL,
@@ -146,8 +128,8 @@ model_dump <- function(obj,
 
   if (is_not_null(exclude)) obj <- purrr::discard_at(obj, exclude)
   if (is_not_null(include)) obj <- purrr::keep_at(obj, include)
-  if (isTRUE(exclude_na)) obj <- discard_all(obj, rlang::is_na)
-  if (isTRUE(exclude_null)) obj <- discard_all(obj, rlang::is_null)
+  if (isTRUE(exclude_na)) obj <- discard_this(obj, rlang::is_na)
+  if (isTRUE(exclude_null)) obj <- discard_this(obj, rlang::is_null)
   if (isTRUE(keys_to_camel_case)) obj <- keys_to_camel_case(obj)
 
   return(obj)

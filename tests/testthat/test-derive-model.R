@@ -1,3 +1,4 @@
+# ---
 test_that("Check derive model", {
   # Prepare
   template <- list(
@@ -22,12 +23,13 @@ test_that("Check derive model", {
     ),
     to_raw_list(
       my_model(
-      a_character = "test",
-      a_model = lm(cyl ~ mpg, data = mtcars),
-      a_dataframe = iris,
-      a_number = 234.1,
-      an_integer = 1L
-    ))
+        a_character = "test",
+        a_model = lm(cyl ~ mpg, data = mtcars),
+        a_dataframe = iris,
+        a_number = 234.1,
+        an_integer = 1L
+      )
+    )
   )
 
   expect_error(

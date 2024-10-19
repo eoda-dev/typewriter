@@ -74,3 +74,11 @@ param_tags <- roxygen2::block_get_tags(blocks[[1]], "param")
 purrr::map(param_tags, ~ list(n = .x$val$name, d = .x$val$description))
 
 # roxygen2::block_has_tags(blocks)
+
+# ---
+l <- list(
+  snake_here = 10,
+  x = list(snake_again = 20)
+)
+
+purrr::map_depth(names(l), -1, to_camel_case)

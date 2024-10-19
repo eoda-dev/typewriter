@@ -13,18 +13,6 @@ str_to_lower <- function(x) {
 }
 
 # ---
-# TODO: Use 'structure' instead
-#set_attributes <- function(x, ...) {
-#  attributes(x) <- c(attributes(x), list(...))
-#  return(x)
-#}
-
-# ---
-#set_class <- function(x, cls = "base_model") {
-#  structure(x, class = c(class(x), cls))
-#}
-
-# ---
 is_not_null <- function(x) {
   isFALSE(is.null(x))
 }
@@ -32,4 +20,10 @@ is_not_null <- function(x) {
 # ---
 to_raw_list <- function(x) {
   purrr::keep_at(x, seq_along(x))
+}
+
+# ---
+map_items <- function(x, fn) {
+  purrr::map2(names(x), x, fn) |>
+    rlang::set_names(names(x))
 }
