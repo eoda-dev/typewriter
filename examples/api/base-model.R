@@ -1,3 +1,4 @@
+# ---
 # Models
 my_model <- base_model(
   a = is.integer,
@@ -5,14 +6,46 @@ my_model <- base_model(
   txt = is.character
 )
 
+# Succeeds
 my_model(a = 1L, b = 2L, txt = "My awesome model")
+
+# Fails
 try(my_model(a = 1, b = 2L, txt = "My awesome model"))
 
-# Validate function args
+# ---
+# Functions
 f <- function(a, b) {
-  validate_args(a = is.numeric, b = is.numeric)
+  check_args(a = is.integer, b = is.integer)
   a + b
 }
 
-f(4, 5)
-try(f(4, "5"))
+# Succeeds
+f(4L, 5L)
+
+# Fails
+try(f(4, 5))
+
+# ---
+# Data frames
+df <- data.frame(
+  id = 1L:2L,
+  name = c("Donald", "Lee"),
+  surname = c("Byrd", "Morgan")
+)
+
+df_model <- base_model(
+  id = is.integer,
+  name = is.character,
+  surname = is.character,
+  .model_post_init = function(obj) {
+    obj$full_name = paste(obj$name, obj$surname)
+    return(obj)
+  }
+)
+
+# Succeeds
+df_model(.x = df)
+
+# Fails
+df$id = NULL
+try(df_model(.x = df))

@@ -8,6 +8,7 @@ base_model(
   fields = list(),
   ...,
   .model_config = model_config(),
+  .model_post_init = NULL,
   .validators_before = list(),
   .validators_after = list()
 )
@@ -19,6 +20,8 @@ base_model(
 
 \item{.model_config}{description}
 
+\item{.model_post_init}{description}
+
 \item{.validators_before}{description}
 
 \item{.validators_after}{description}
@@ -28,4 +31,57 @@ A model factory function.
 }
 \description{
 Create a model factory function
+}
+\examples{
+# ---
+# Models
+my_model <- base_model(
+  a = is.integer,
+  b = is.integer,
+  txt = is.character
+)
+
+# Succeeds
+my_model(a = 1L, b = 2L, txt = "My awesome model")
+
+# Fails
+try(my_model(a = 1, b = 2L, txt = "My awesome model"))
+
+# ---
+# Functions
+f <- function(a, b) {
+  check_args(a = is.integer, b = is.integer)
+  a + b
+}
+
+# Succeeds
+f(4L, 5L)
+
+# Fails
+try(f(4, 5))
+
+# ---
+# Data frames
+df <- data.frame(
+  id = 1L:2L,
+  name = c("Donald", "Lee"),
+  surname = c("Byrd", "Morgan")
+)
+
+df_model <- base_model(
+  id = is.integer,
+  name = is.character,
+  surname = is.character,
+  .model_post_init = function(obj) {
+    obj$full_name = paste(obj$name, obj$surname)
+    return(obj)
+  }
+)
+
+# Succeeds
+df_model(.x = df)
+
+# Fails
+df$id = NULL
+try(df_model(.x = df))
 }

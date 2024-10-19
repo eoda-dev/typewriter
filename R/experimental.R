@@ -25,12 +25,15 @@ model_config <- function(allow_extra = FALSE,
 #' @param fields description
 #' @param ... description
 #' @param .model_config description
+#' @param .model_post_init description
 #' @param .validators_before description
 #' @param .validators_after description
 #' @returns A model factory function.
+#' @example examples/api/base-model.R
 #' @export
 base_model <- function(fields = list(), ...,
                        .model_config = model_config(),
+                       .model_post_init = NULL,
                        .validators_before = list(),
                        .validators_after = list()) {
   fields <- utils::modifyList(fields, list(...), keep.null = TRUE)
@@ -44,7 +47,7 @@ base_model <- function(fields = list(), ...,
 
   model_args <- purrr::map(fields, ~ .x$default)
 
-  # Create model function
+  # Create model factory function
   model_fn <- rlang::new_function(c(model_args, alist(... = , .x = NULL)), quote({
     if (is_not_null(.x)) {
       obj <- .x
@@ -82,6 +85,10 @@ base_model <- function(fields = list(), ...,
 
     if (isFALSE(.model_config$allow_extra)) {
       obj <- purrr::keep_at(obj, names(fields))
+    }
+
+    if (is_not_null(.model_post_init)) {
+      obj <- .model_post_init(obj)
     }
 
     if (is.data.frame(obj)) {
