@@ -100,3 +100,20 @@ test_that("validate data frame", {
   expect_type(df$cyl, "integer")
   expect_error(my_model(.x = df_to_fail))
 })
+
+# ---
+test_that("model field", {
+  # Prepare
+  my_model <- base_model(
+    a = is.integer,
+    b = model_field(is.integer, 10L)
+  )
+
+  # Act
+  res <- my_model(5L)
+
+  # Assert
+  expect_equal(res$a, 5L)
+  expect_equal(res$b, 10L)
+  expect_s3_class(res, CLASS_RDANTIC)
+})
