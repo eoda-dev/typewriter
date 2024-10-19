@@ -61,9 +61,8 @@ base_model <- function(fields = list(), ...,
         cli::cli_abort(
           c(
             "Type check failed.",
+            "!" = "field: {name}, type: {typeof(obj_value)}, length: {length(obj_value)}",
             x = "{name} = {rlang::quo_text(obj_value)}",
-            i = "type: {typeof(obj_value)}",
-            i = "length: {length(obj_value)}",
             x = "{rlang::quo_text(check_type_fn)}"
           ),
           .frame = rlang::current_env()

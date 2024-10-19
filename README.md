@@ -28,12 +28,12 @@ library(rlang)
 
 # ---
 # Models
-numbers <- base_model(
+my_model <- base_model(
   a = is_integer,
   b = is_integer
 )
 
-numbers(a = 2L, b = 4L)
+my_model(a = 2L, b = 4L)
 #> $a
 #> [1] 2
 #> 
@@ -42,11 +42,10 @@ numbers(a = 2L, b = 4L)
 ```
 
 ``` r
-try(numbers(a = 2L, b = 4.5))
-#> Error in numbers(a = 2L, b = 4.5) : Type check failed.
+try(my_model(a = 2L, b = 4.5))
+#> Error in my_model(a = 2L, b = 4.5) : Type check failed.
+#> ! field: b, type: double, length: 1
 #> ✖ b = 4.5
-#> ℹ type: double
-#> ℹ length: 1
 #> ✖ function (x, n = NULL) { .Call(ffi_is_integer, x, n) }
 ```
 
@@ -54,29 +53,54 @@ try(numbers(a = 2L, b = 4.5))
 
 # ---
 # Functions
-f <- function(
+f <- function(a, b = 5L) {
+  check_args(
     a = is_integer,
-    b = model_field(is_integer, default = 10L)
-) {
-  check_args()
+    b = is_scalar_integer
+  )
   a + b
 }
 
 f(5L)
-#> [1] 15
+#> [1] 10
 ```
 
 ``` r
-f(5L, 15L)
-#> [1] 20
-```
-
-``` r
-try(f(5, 5))
+try(f(5L, c(3L, 4L)))
 #> Error in base_model(fields)(.x = e) : Type check failed.
-#> ✖ a = 5
-#> ℹ type: double
-#> ℹ length: 1
+#> ! field: b, type: integer, length: 2
+#> ✖ b = 3:4
+#> ✖ function (x) { .Call(ffi_is_integer, x, 1L) }
+```
+
+``` r
+
+# ---
+# Data frames
+df <- data.frame(
+  id = 1:3L,
+  letter = letters[1:3]
+)
+
+my_model <- base_model(
+  id = is_integer,
+  letter = is_character
+)
+
+df |> model_validate(my_model)
+#>   id letter
+#> 1  1      a
+#> 2  2      b
+#> 3  3      c
+```
+
+``` r
+
+df$id <- as.double(df$id)
+try(df |> model_validate(my_model))
+#> Error in model_fn(.x = obj) : Type check failed.
+#> ! field: id, type: double, length: 3
+#> ✖ id = c(1, 2, 3)
 #> ✖ function (x, n = NULL) { .Call(ffi_is_integer, x, n) }
 ```
 
