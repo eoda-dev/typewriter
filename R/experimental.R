@@ -88,7 +88,7 @@ base_model <- function(fields = list(), ...,
     }
 
     if (is_not_null(.model_post_init)) {
-      obj <- .model_post_init(obj)
+      obj <- rlang::as_function(.model_post_init)(obj)
     }
 
     if (is.data.frame(obj)) {

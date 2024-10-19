@@ -117,3 +117,26 @@ test_that("model field", {
   expect_equal(res$b, 10L)
   expect_s3_class(res, CLASS_RDANTIC)
 })
+
+test_that("model post init", {
+  # Prepare
+  df <- data.frame(
+    id = 1L:2L,
+    name = c("Donald", "Lee"),
+    surname = c("Byrd", "Morgan")
+  )
+
+  df_model <- base_model(
+    id = is.integer,
+    name = is.character,
+    surname = is.character,
+    .model_post_init = function(obj) {
+      obj$full_name = paste(obj$name, obj$surname)
+      return(obj)
+    }
+  )
+
+  # Act
+  res_def <- df_model(.x = df)
+  expect_equal(names(res_def), c("id", "name", "surname", "full_name"))
+})
