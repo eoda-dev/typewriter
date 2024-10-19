@@ -27,3 +27,13 @@ map_items <- function(x, fn) {
   purrr::map2(names(x), x, fn) |>
     rlang::set_names(names(x))
 }
+
+# ---
+str_to_camel_case <- function(strings) {
+  gsub("_(\\w?)", "\\U\\1", strings, perl = TRUE)
+}
+
+# ---
+str_to_snake_case <- function(strings) {
+  gsub(" ", "_", tolower(gsub("(.)([A-Z])", "\\1 \\2", strings)))
+}
