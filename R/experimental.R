@@ -148,6 +148,13 @@ print.rdantic <- function(x, ...) {
 }
 
 # ---
+# model_validate_from_json <- function(path, model_fn, simplify_vec = TRUE, ...) {
+#  obj <- jsonlite::read_json(path, simplifyVector = simplify_vec, ...)
+#  model_validate(obj, model_fn)
+# }
+
+# ---
+# TODO: Deprecated, use single functions as 'exclude_na'
 model_dump <- function(obj,
                        exclude = NULL,
                        include = NULL,

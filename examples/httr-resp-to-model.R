@@ -16,7 +16,7 @@ cat_facts_model <- base_model(
   status = is_another_model(status_model),
   .validators_after = list(
     created_at = as_datetime,
-    updated_at= as_datetime
+    updated_at = as_datetime
   )
 )
 

@@ -131,7 +131,7 @@ test_that("model post init", {
     name = is.character,
     surname = is.character,
     .model_post_init = function(obj) {
-      obj$full_name = paste(obj$name, obj$surname)
+      obj$full_name <- paste(obj$name, obj$surname)
       return(obj)
     }
   )

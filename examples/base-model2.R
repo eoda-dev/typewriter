@@ -1,6 +1,6 @@
 devtools::load_all()
 
-#check_args <- function(...) {
+# check_args <- function(...) {
 #  fields <- list(...)
 #  if (length(fields) == 0) {
 #    fn <- rlang::caller_fn()
@@ -17,7 +17,7 @@ devtools::load_all()
 #  }
 
 #  base_model2(fields)(.x = e)
-#}
+# }
 
 f <- function(a, b = 80L) {
   check_args(a = is.integer, b = is.integer)
@@ -62,7 +62,8 @@ external_data <- list(
 my_api_model(.x = external_data)
 
 external_data |>
-  model_validate(my_api_model) |> model_dump2(exclude = "address", by_alias = TRUE)
+  model_validate(my_api_model) |>
+  model_dump2(exclude = "address", by_alias = TRUE)
 
 # ---
 

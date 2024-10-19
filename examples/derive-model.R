@@ -1,8 +1,10 @@
-template <- list(a_character = "hello",
-                 a_model = lm(mpg ~ cyl, data = mtcars),
-                 a_dataframe = mtcars,
-                 a_number = 12,
-                 an_integer = 12L)
+template <- list(
+  a_character = "hello",
+  a_model = lm(mpg ~ cyl, data = mtcars),
+  a_dataframe = mtcars,
+  a_number = 12,
+  an_integer = 12L
+)
 
 
 my_model <- derive_model(template)
@@ -26,4 +28,3 @@ try(
     a_number = 7
   )
 )
-
