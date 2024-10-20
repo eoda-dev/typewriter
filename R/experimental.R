@@ -42,6 +42,14 @@ base_model <- function(fields = list(), ...,
       return(model_field(fn = .x))
     }
 
+    if (inherits(.x, CLASS_RDANTIC_MODEL)) {
+      model_fn <- .x
+      fn <- function(x) {
+        is.list(model_validate(x, model_fn))
+      }
+      return(model_field(fn = fn))
+    }
+
     return(.x)
   })
 
