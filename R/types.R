@@ -16,9 +16,19 @@ optional_field <- function(type_check_fn) {
   }
 }
 
-#' Check/assert a model inside a model
-#' @param model_obj model to check
+#' Check a model type
+#' @param model_fn A model factory function
 #' @export
-is_model <- function(model_obj) {
-  function(x) is.list(model_obj(x))
+is_rdantic_model <- function(model_fn) {
+  function(x) {
+    is.list(model_validate(x, model_fn))
+  }
+}
+
+# ---
+dtype_integer <- function(n = NULL) {
+  fn <- function(x) {
+    typeof(x) == "integer" & length(x) == n
+  }
+  structure(fn, dtype = "integer", n = n)
 }
