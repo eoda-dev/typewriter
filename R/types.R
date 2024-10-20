@@ -9,7 +9,12 @@ is_optional <- function(fn) {
   eval(parse(text = paste0("function(x) ", fn_name, "(x) | is.null(x)")))
 }
 
-is_optional2 <- function(.f) set_attributes(.f, optional = TRUE)
+# ---
+optional_field <- function(type_check_fn) {
+  function(x) {
+    type_check_fn(x) | is.null(x) | rlang::is_na(x)
+  }
+}
 
 #' Check/assert a model inside a model
 #' @param model_obj model to check
