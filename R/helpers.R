@@ -37,3 +37,28 @@ str_to_camel_case <- function(strings) {
 str_to_snake_case <- function(strings) {
   gsub(" ", "_", tolower(gsub("(.)([A-Z])", "\\1 \\2", strings)))
 }
+
+# ---
+mutate_names <- function(x, fn, .recursive = TRUE) {
+  for (name in names(x)) {
+    value <- x[[name]]
+    new_name <- fn(name)
+    if (is.list(value) & isTRUE(.recursive)) {
+      value <- mutate_names(value, fn)
+    }
+    x[[name]] <- NULL
+    x[[new_name]] <- value
+  }
+
+  return(x)
+}
+
+# ---
+names_to_camel_case <- function(obj, .recursive = TRUE) {
+  mutate_names(obj, str_to_camel_case, .recursive)
+}
+
+# ---
+names_to_snake_case <- function(obj, .recursive = TRUE) {
+  mutate_names(obj, str_to_snake_case, .recursive)
+}
