@@ -1,4 +1,9 @@
 # ---
+model_fields <- function(model_fn) {
+  attr(model_fn, "fields")
+}
+
+# ---
 #' Create a model field
 #' @param fn A type check function.
 #' @param default A default value for the field.
