@@ -45,7 +45,7 @@ base_model <- function(fields = list(), ...,
                        .validators_after = list()) {
   fields <- utils::modifyList(fields, list(...), keep.null = TRUE)
   fields <- purrr::map(fields, ~ {
-    if (inherits(.x, "function")) {
+    if (inherits(.x, c("function", "formula"))) {
       return(model_field(fn = .x))
     }
 
@@ -64,6 +64,8 @@ base_model <- function(fields = list(), ...,
 
   # Create model factory function
   model_fn <- rlang::new_function(c(model_args, alist(... = , .x = NULL)), quote({
+    errors <- list()
+
     if (is_not_null(.x)) {
       obj <- .x
     } else {
@@ -80,15 +82,22 @@ base_model <- function(fields = list(), ...,
       check_type_fn <- rlang::as_function(fields[[name]]$fn)
       obj_value <- obj[[name]]
       if (isFALSE(check_type_fn(obj_value))) {
-        cli::cli_abort(
-          c(
-            "Type check failed.",
-            "!" = "field: {name}, type: {typeof(obj_value)}, length: {length(obj_value)}",
-            x = "{name} = {rlang::quo_text(obj_value)}",
-            x = "{rlang::quo_text(check_type_fn)}"
-          ),
-          .frame = rlang::current_env()
+        errors[[name]] <- list(
+          name = name,
+          value = obj_value,
+          type = typeof(obj_value),
+          len = length(obj_value),
+          type_check_failed = check_type_fn
         )
+        # cli::cli_abort(
+        #  c(
+        #    "Type check failed.",
+        #    "!" = "field: {name}, type: {typeof(obj_value)}, length: {length(obj_value)}",
+        #    x = "{name} = {rlang::quo_text(obj_value)}",
+        #    x = "{rlang::quo_text(check_type_fn)}"
+        #  ),
+        #  .frame = rlang::current_env()
+        # )
       }
     }
 
@@ -96,6 +105,15 @@ base_model <- function(fields = list(), ...,
 
     if (isTRUE(.model_config$str_to_lower)) {
       obj <- purrr::map_depth(obj, -1, str_to_lower)
+    }
+
+    if (length(errors) > 0) {
+      for(error in errors) {
+        message("# ---")
+        message(glue::glue("Type check failed: {error$name} = {rlang::quo_text(error$value)}"))
+        message(rlang::quo_text(error$type_check_failed))
+      }
+      stop("Type check(s) above failed")
     }
 
     if (is.environment(obj)) {
