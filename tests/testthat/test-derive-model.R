@@ -10,7 +10,7 @@ test_that("Check derive model", {
   )
 
   # Act
-  my_model <- derive_model(template)
+  my_model <- model_from_template(template)
 
   # Assert
   expect_equal(

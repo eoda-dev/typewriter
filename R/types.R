@@ -17,7 +17,7 @@ optional_field <- function(type_check_fn) {
 }
 
 #' Check a model type
-#' @param model_fn A model factory function
+#' @param model_fn A model factory function.
 #' @export
 is_rdantic_model <- function(model_fn) {
   function(x) {
