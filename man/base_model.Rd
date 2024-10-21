@@ -8,6 +8,7 @@ base_model(
   fields = list(),
   ...,
   .model_config = model_config(),
+  .model_pre_init = NULL,
   .model_post_init = NULL,
   .validators_before = list(),
   .validators_after = list()
@@ -19,6 +20,8 @@ base_model(
 \item{...}{description}
 
 \item{.model_config}{description}
+
+\item{.model_pre_init}{description}
 
 \item{.model_post_init}{description}
 

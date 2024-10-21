@@ -30,6 +30,7 @@ model_config <- function(allow_extra = FALSE,
 #' @param fields description
 #' @param ... description
 #' @param .model_config description
+#' @param .model_pre_init description
 #' @param .model_post_init description
 #' @param .validators_before description
 #' @param .validators_after description
@@ -38,6 +39,7 @@ model_config <- function(allow_extra = FALSE,
 #' @export
 base_model <- function(fields = list(), ...,
                        .model_config = model_config(),
+                       .model_pre_init = NULL,
                        .model_post_init = NULL,
                        .validators_before = list(),
                        .validators_after = list()) {
@@ -69,6 +71,10 @@ base_model <- function(fields = list(), ...,
     }
 
     obj <- validate_fields(obj, .validators_before)
+
+    if (is_not_null(.model_pre_init)) {
+      obj <- rlang::as_function(.model_pre_init)(obj)
+    }
 
     for (name in names(fields)) {
       check_type_fn <- rlang::as_function(fields[[name]]$fn)

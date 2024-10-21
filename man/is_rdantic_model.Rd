@@ -7,7 +7,7 @@
 is_rdantic_model(model_fn)
 }
 \arguments{
-\item{model_fn}{A model factory function}
+\item{model_fn}{A model factory function.}
 }
 \description{
 Check a model type
