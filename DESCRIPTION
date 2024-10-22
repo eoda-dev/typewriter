@@ -10,19 +10,18 @@ Authors@R: c(
 Maintainer: Stefan Kuethe <crazycapivara@gmail.com>
 Description: Adds type safety to R.
 URL:
-  https://github.com/eodaGmbH/rdantic
-  https://eodagmbh.github.io/rdantic/
-BugReports: https://github.com/eodaGmbH/rdantic/issues
+  https://github.com/eoda-dev/rdantic
+  https://eoda-dev.github.io/rdantic/
+BugReports: https://github.com/eoda-dev/rdantic/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: 
-    cli,
+Imports:
     glue,
     purrr,
     rlang
 RoxygenNote: 7.3.2
-Suggests: 
+Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
