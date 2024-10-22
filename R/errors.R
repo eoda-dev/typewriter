@@ -6,9 +6,12 @@ create_type_check_error_message <- function(error) {
   } else {
     text_fn <- rlang::quo_text(rlang::fn_body(fn))
   }
+  text_fn <- gsub("\\(.x\\)|\\(x\\)|, x", glue::glue("({error$name})"), text_fn)
   msg <- c(
     "# ---",
-    glue::glue("Type check failed: {error$name} = {rlang::quo_text(error$value)}"),
+    glue::glue("Type check failed for '{error$name} = {rlang::quo_text(error$value)}'"),
+    glue::glue("type: {error$type}"),
+    glue::glue("length: {error$len}"),
     text_fn
   )
   return(msg)
