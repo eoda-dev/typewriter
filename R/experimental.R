@@ -89,15 +89,6 @@ base_model <- function(fields = list(), ...,
           len = length(obj_value),
           type_check_failed = check_type_fn
         )
-        # cli::cli_abort(
-        #  c(
-        #    "Type check failed.",
-        #    "!" = "field: {name}, type: {typeof(obj_value)}, length: {length(obj_value)}",
-        #    x = "{name} = {rlang::quo_text(obj_value)}",
-        #    x = "{rlang::quo_text(check_type_fn)}"
-        #  ),
-        #  .frame = rlang::current_env()
-        # )
       }
     }
 
@@ -108,12 +99,7 @@ base_model <- function(fields = list(), ...,
     }
 
     if (length(errors) > 0) {
-      # for (error in errors) {
-      #  message(create_type_check_error_message(error))
-      #}
-      # msg <- purrr::map(errors, create_type_check_error_message)
       msg <- paste0(map_type_check_errors(errors), collapse = "\n")
-      # message(paste0(msg, collapse = "\n"))
       stop("Type check(s) failed\n", msg, domain = NA)
     }
 
