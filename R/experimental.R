@@ -108,12 +108,13 @@ base_model <- function(fields = list(), ...,
     }
 
     if (length(errors) > 0) {
-      for(error in errors) {
-        message("# ---")
-        message(glue::glue("Type check failed: {error$name} = {rlang::quo_text(error$value)}"))
-        message(rlang::quo_text(error$type_check_failed))
-      }
-      stop("Type check(s) above failed")
+      # for (error in errors) {
+      #  message(create_type_check_error_message(error))
+      #}
+      # msg <- purrr::map(errors, create_type_check_error_message)
+      msg <- paste0(map_type_check_errors(errors), collapse = "\n")
+      # message(paste0(msg, collapse = "\n"))
+      stop("Type check(s) failed\n", msg, domain = NA)
     }
 
     if (is.environment(obj)) {
