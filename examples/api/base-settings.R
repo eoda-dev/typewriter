@@ -9,4 +9,10 @@ postgres_settings <- base_settings(
   .prefix = "POSTGRES"
 )
 
+# Succeeds
 postgres_settings()
+
+Sys.setenv(POSTGRES_PORT = "")
+
+# Fails
+try(postgres_settings())

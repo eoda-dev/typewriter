@@ -66,7 +66,7 @@ try(f(4, 5))
 # ---
 # Data frames
 df <- data.frame(
-  id = 1L:2L,
+  id = 1:2,
   name = c("Donald", "Lee"),
   surname = c("Byrd", "Morgan")
 )
@@ -75,7 +75,8 @@ df_model <- base_model(
   id = is.integer,
   name = is.character,
   surname = is.character,
-  .model_post_init = function(obj) {
+  full_name = is.character,
+  .model_pre_init = function(obj) {
     obj$full_name <- paste(obj$name, obj$surname)
     return(obj)
   }

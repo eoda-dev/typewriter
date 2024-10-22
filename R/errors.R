@@ -1,4 +1,5 @@
 # ---
+#' @importFrom utils capture.output str
 create_type_check_error_message <- function(error) {
   value_text <- paste0(capture.output(str(error$value)), collapse = "\n")
   fn <- error$type_check_failed
