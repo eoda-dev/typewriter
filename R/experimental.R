@@ -18,6 +18,7 @@ model_field <- function(fn, default = NA, alias = NULL, ...) {
 #' Create a model config object
 #' @param allow_extra description
 #' @param str_to_lower description
+#' @param ... **not used** at the moment
 #' @returns A model config object that can be used in [base_model()].
 #' @export
 model_config <- function(allow_extra = FALSE,

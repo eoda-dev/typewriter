@@ -10,6 +10,8 @@ model_config(allow_extra = FALSE, str_to_lower = FALSE, ...)
 \item{allow_extra}{description}
 
 \item{str_to_lower}{description}
+
+\item{...}{\strong{not used} at the moment}
 }
 \value{
 A model config object that can be used in \code{\link[=base_model]{base_model()}}.
