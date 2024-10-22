@@ -27,7 +27,7 @@ You can install the development version of rdantic from [GitHub](https://github.
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("eodaGmbH/rdantic")
+devtools::install_github("eoda-dev/rdantic")
 ```
 
 ## Examples
@@ -36,7 +36,6 @@ devtools::install_github("eodaGmbH/rdantic")
 library(rdantic)
 library(rlang)
 
-# ---
 # Models
 my_model <- base_model(
   a = is_integer,
@@ -46,7 +45,6 @@ my_model <- base_model(
 my_model(a = 2L, b = 4L)
 try(my_model(a = 2L, b = 4.5))
 
-# ---
 # Functions
 f <- function(a, b = 5L) {
   check_args(
@@ -59,7 +57,6 @@ f <- function(a, b = 5L) {
 f(5L)
 try(f(5L, c(3L, 4L)))
 
-# ---
 # Data frames
 df <- data.frame(
   id = 1:3L,
@@ -75,23 +72,4 @@ df |> model_validate(my_model)
 
 df$id <- as.double(df$id)
 try(df |> model_validate(my_model))
-
-# ---
-# Settings
-postgres_settings <- base_settings(
-  username = as.character,
-  password = as.character,
-  port = as.integer,
-  .prefix = "POSTGRES"
-)
-
-Sys.setenv(POSTGRES_USERNAME = "postgres")
-Sys.setenv(POSTGRES_PASSWORD = "superSecret!")
-Sys.setenv(POSTGRES_PORT = 15432)
-
-postgres_settings()
-
-Sys.setenv(POSTGRES_PORT = "")
-
-try(postgres_settings())
 ```

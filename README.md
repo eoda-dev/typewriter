@@ -17,7 +17,7 @@ You can install the development version of rdantic from
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("eodaGmbH/rdantic")
+devtools::install_github("eoda-dev/rdantic")
 ```
 
 ## Examples
@@ -26,7 +26,6 @@ devtools::install_github("eodaGmbH/rdantic")
 library(rdantic)
 library(rlang)
 
-# ---
 # Models
 my_model <- base_model(
   a = is_integer,
@@ -43,15 +42,19 @@ my_model(a = 2L, b = 4L)
 
 ``` r
 try(my_model(a = 2L, b = 4.5))
-#> Error in my_model(a = 2L, b = 4.5) : Type check failed.
-#> ! field: b, type: double, length: 1
-#> ✖ b = 4.5
-#> ✖ function (x, n = NULL) { .Call(ffi_is_integer, x, n) }
+#> Error in my_model(a = 2L, b = 4.5) : Type check(s) failed
+#> # ---
+#> Type check failed for 'b'
+#> value:  num 4.5
+#> type: double
+#> length: 1
+#> {
+#>     .Call(ffi_is_integer, x, n)
+#> }
 ```
 
 ``` r
 
-# ---
 # Functions
 f <- function(a, b = 5L) {
   check_args(
@@ -67,15 +70,19 @@ f(5L)
 
 ``` r
 try(f(5L, c(3L, 4L)))
-#> Error in base_model(fields)(.x = e) : Type check failed.
-#> ! field: b, type: integer, length: 2
-#> ✖ b = 3:4
-#> ✖ function (x) { .Call(ffi_is_integer, x, 1L) }
+#> Error in base_model(fields)(.x = e) : Type check(s) failed
+#> # ---
+#> Type check failed for 'b'
+#> value:  int [1:2] 3 4
+#> type: integer
+#> length: 2
+#> {
+#>     .Call(ffi_is_integer, x, 1L)
+#> }
 ```
 
 ``` r
 
-# ---
 # Data frames
 df <- data.frame(
   id = 1:3L,
@@ -98,43 +105,13 @@ df |> model_validate(my_model)
 
 df$id <- as.double(df$id)
 try(df |> model_validate(my_model))
-#> Error in model_fn(.x = obj) : Type check failed.
-#> ! field: id, type: double, length: 3
-#> ✖ id = c(1, 2, 3)
-#> ✖ function (x, n = NULL) { .Call(ffi_is_integer, x, n) }
-```
-
-``` r
-
-# ---
-# Settings
-postgres_settings <- base_settings(
-  username = as.character,
-  password = as.character,
-  port = as.integer,
-  .prefix = "POSTGRES"
-)
-
-Sys.setenv(POSTGRES_USERNAME = "postgres")
-Sys.setenv(POSTGRES_PASSWORD = "superSecret!")
-Sys.setenv(POSTGRES_PORT = 15432)
-
-postgres_settings()
-#> $username
-#> [1] "postgres"
-#> 
-#> $password
-#> [1] "superSecret!"
-#> 
-#> $port
-#> [1] 15432
-```
-
-``` r
-
-Sys.setenv(POSTGRES_PORT = "")
-
-try(postgres_settings())
-#> Error in raise_type_check_error(env_var_name, .obj[[k]], as_type) : 
-#>   konnte Funktion "raise_type_check_error" nicht finden
+#> Error in model_fn(.x = obj) : Type check(s) failed
+#> # ---
+#> Type check failed for 'id'
+#> value:  num [1:3] 1 2 3
+#> type: double
+#> length: 3
+#> {
+#>     .Call(ffi_is_integer, x, n)
+#> }
 ```
