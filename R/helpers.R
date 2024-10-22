@@ -78,7 +78,7 @@ names_to_camel_case <- function(obj, .recursive = TRUE) {
 
 # ---
 #' Convert names of an object to snake case
-#' @param obj A list or a data frame.
+#' @inheritParams names_to_camel_case
 #' @returns The input object with snake case names.
 #' @export
 names_to_snake_case <- function(obj, .recursive = TRUE) {

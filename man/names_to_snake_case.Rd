@@ -8,6 +8,8 @@ names_to_snake_case(obj, .recursive = TRUE)
 }
 \arguments{
 \item{obj}{A list or a data frame.}
+
+\item{.recursive}{Whether to convert names on all levels.}
 }
 \value{
 The input object with snake case names.
