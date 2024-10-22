@@ -28,12 +28,14 @@ model_config <- function(allow_extra = FALSE,
 
 # ---
 #' Create a model factory function
-#' @param fields description
-#' @param ... description
-#' @param .model_config description
-#' @param .model_pre_init description
+#' @param fields A named list of field definitions.
+#' @param ... Named arguments of field definitions.
+#'  Normally either `fields` or `...` is supplied.
+#' @param .model_config See [model_config()].
+#' @param .model_pre_init A callback function that is executed before the type checks.
 #' @param .model_post_init description
-#' @param .validators_before description
+#' @param .validators_before A named list of field validators
+#'  that are executed before the type checks.
 #' @param .validators_after description
 #' @returns A model factory function.
 #' @example examples/api/base-model.R
@@ -170,6 +172,20 @@ model_validate <- function(obj, model_fn) {
 print.rdantic <- function(x, ...) {
   print(x[seq_along(x)])
   return(invisible(x))
+}
+
+# ---
+#' @export
+`[[<-.rdantic_unused` <- function(x, ...) {
+  l <- list(...)
+  field_name <- l[[1]]
+  fields <- model_fields(x)
+  type_check_fn <- rlang::as_function(fields[[field_name]]$fn)
+  # stopifnot(type_check_fn(l$value))
+  if (isFALSE(type_check_fn(l$value))) {
+    stop("Type check failed.")
+  }
+  NextMethod()
 }
 
 # ---

@@ -15,17 +15,19 @@ base_model(
 )
 }
 \arguments{
-\item{fields}{description}
+\item{fields}{A named list of field definitions.}
 
-\item{...}{description}
+\item{...}{Named arguments of field definitions.
+Normally either \code{fields} or \code{...} is supplied.}
 
-\item{.model_config}{description}
+\item{.model_config}{See \code{\link[=model_config]{model_config()}}.}
 
-\item{.model_pre_init}{description}
+\item{.model_pre_init}{A callback function that is executed before the type checks.}
 
 \item{.model_post_init}{description}
 
-\item{.validators_before}{description}
+\item{.validators_before}{A named list of field validators
+that are executed before the type checks.}
 
 \item{.validators_after}{description}
 }
