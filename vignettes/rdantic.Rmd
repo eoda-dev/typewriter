@@ -108,7 +108,7 @@ api_model <- base_model(
 )
 
 external_data |>
-  keys_to_snake_case() |>
+  names_to_snake_case() |>
   model_validate(api_model)
 ```
 

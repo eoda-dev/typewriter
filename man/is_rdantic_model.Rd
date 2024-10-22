@@ -2,13 +2,13 @@
 % Please edit documentation in R/types.R
 \name{is_rdantic_model}
 \alias{is_rdantic_model}
-\title{Check a model type}
+\title{Type predicate \verb{rdantic model}}
 \usage{
 is_rdantic_model(model_fn)
 }
 \arguments{
-\item{model_fn}{A model factory function.}
+\item{model_fn}{A model factory function created with \code{\link[=base_model]{base_model()}}.}
 }
 \description{
-Check a model type
+Type predicate \verb{rdantic model}
 }

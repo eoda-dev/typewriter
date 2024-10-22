@@ -63,18 +63,6 @@ keys_to_snake_case <- function(x, .recursive = TRUE) {
 }
 
 # ---
-discard_this <- function(x, fn = rlang::is_na) {
-  for (name in names(x)) {
-    value <- x[[name]]
-    if (is.list(value)) {
-      x[[name]] <- discard_this(value, fn)
-    }
-  }
-
-  return(purrr::discard(x, fn))
-}
-
-# ---
 discard_this2 <- function(x, fn = rlang::is_na) {
   l <- list()
   for (name in names(x)) {

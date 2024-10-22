@@ -9,7 +9,7 @@ test_that("snakes to camels", {
   )
 
   # Act
-  l_camels <- keys_to_camel_case(l)
+  l_camels <- names_to_camel_case(l)
 
   # Assert
   expect_equal(names(l_camels), c("snakeCase", "camelCase", "isSnakeCase", "isCamelCase"))
@@ -25,7 +25,7 @@ test_that("camels to snakes", {
   )
 
   # Act
-  res <- keys_to_snake_case(from_json)
+  res <- names_to_snake_case(from_json)
 
   # Assert
   expect_equal(res, list(convert_me_to_snakes = "okay", this_is_snake_case = "yes"))
