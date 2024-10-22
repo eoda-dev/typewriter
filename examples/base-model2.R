@@ -43,7 +43,7 @@ my_model2 <- base_model2(
 )
 my_model2(.x = tibble::as_tibble(mtcars))
 
-my_api_model <- base_model2(
+my_api_model <- base_model(
   name = is.character,
   age = is.integer,
   address = is.list,
