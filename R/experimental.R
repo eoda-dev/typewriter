@@ -175,16 +175,22 @@ print.rdantic <- function(x, ...) {
 }
 
 # ---
-#' @export
-`[[<-.rdantic_unused` <- function(x, ...) {
-  l <- list(...)
-  field_name <- l[[1]]
+check_model_value <- function(x, name, value) {
   fields <- model_fields(x)
-  type_check_fn <- rlang::as_function(fields[[field_name]]$fn)
-  # stopifnot(type_check_fn(l$value))
-  if (isFALSE(type_check_fn(l$value))) {
+  type_check_fn <- rlang::as_function(fields[[name]]$fn)
+  if (isFALSE(type_check_fn(value))) {
     stop("Type check failed.")
   }
+}
+
+# ---
+#' @export
+`$<-.rdantic` <- function(x, name, value) {
+  if (isFALSE(name %in% names(x))) {
+    return(x)
+  }
+
+  check_model_value(x, name, value)
   NextMethod()
 }
 
