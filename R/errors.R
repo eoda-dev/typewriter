@@ -8,7 +8,8 @@ create_type_check_error_message <- function(error) {
   } else {
     text_fn <- rlang::quo_text(rlang::fn_body(fn))
   }
-  text_fn <- gsub("\\(.x\\)|\\(x\\)", glue::glue("({error$name})"), text_fn)
+
+  # text_fn <- gsub("\\(.x\\)|\\(x\\)", glue::glue("({error$name})"), text_fn)
   msg <- c(
     glue::glue("# ---\nType check failed for '{error$name}'"),
     paste("value:", value_text),
