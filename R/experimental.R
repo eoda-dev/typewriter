@@ -16,8 +16,8 @@ model_field <- function(fn, default = NA, alias = NULL, ...) {
 
 # ---
 #' Create a model config object
-#' @param allow_extra description
-#' @param str_to_lower description
+#' @param allow_extra Whether to allow extra fields without type check.
+#' @param str_to_lower Convert all strings to lower case.
 #' @param ... **not used** at the moment
 #' @returns A model config object that can be used in [base_model()].
 #' @export
@@ -33,10 +33,11 @@ model_config <- function(allow_extra = FALSE,
 #'  Normally either `fields` or `...` is supplied.
 #' @param .model_config See [model_config()].
 #' @param .model_pre_init A callback function that is executed before the type checks.
-#' @param .model_post_init description
+#' @param .model_post_init A callback function that is executed after the type checks.
 #' @param .validators_before A named list of field validators
 #'  that are executed before the type checks.
-#' @param .validators_after description
+#' @param .validators_after A named list of field validators
+#'  that are executed after the type checks.
 #' @returns A model factory function.
 #' @example examples/api/base-model.R
 #' @export
@@ -67,13 +68,13 @@ base_model <- function(fields = list(), ...,
 
   # Create model factory function
   model_fn <- rlang::new_function(c(model_args, alist(... = , .x = NULL)), quote({
-    errors <- list()
-
     if (is_not_null(.x)) {
       obj <- .x
     } else {
-      obj <- as.list(environment())
+      obj <- c(as.list(environment()), list(...))
     }
+
+    errors <- list()
 
     obj <- validate_fields(obj, .validators_before)
 
@@ -122,7 +123,7 @@ base_model <- function(fields = list(), ...,
       return(obj)
     }
 
-    return(structure(obj, fields = fields, class = CLASS_RDANTIC))
+    return(structure(obj, fields = fields, class = c(class(obj), CLASS_RDANTIC)))
   }))
 
   return(
@@ -136,8 +137,20 @@ base_model <- function(fields = list(), ...,
 
 # ---
 #' Check function arguments
-#' @param ... description
+#' @param ... Arg definitions.
 #' @returns The caller environment.
+#' @examples {
+#'   f <- function(a, b) {
+#'     check_args(a = is.integer, b = is.integer)
+#'     a + b
+#'   }
+#'
+#'   # Succeeds
+#'   f(10L, 20L)
+#'
+#'   # Fails
+#'   try(f(10L, 4.6))
+#' }
 #' @export
 check_args <- function(...) {
   fields <- list(...)
@@ -159,7 +172,7 @@ check_args <- function(...) {
 }
 
 # ---
-#' Validate an object
+#' Validate a list or a data frame
 #' @param obj A list or a data.frame.
 #' @param model_fn A model factory function created with [base_model()].
 #' @export
@@ -213,21 +226,39 @@ check_assignment <- function(x, name, value) {
 # }
 
 # ---
-# TODO: Deprecated, use single functions as 'exclude_na'
+# TODO: Deprecated?, use single functions as 'model_exclude_na'
 model_dump <- function(obj,
                        exclude = NULL,
                        include = NULL,
                        exclude_na = FALSE,
                        exclude_null = FALSE,
-                       by_alias = FALSE,
-                       keys_to_camel_case = FALSE) {
+                       by_alias = FALSE) {
   fields <- model_fields(obj)
 
-  if (is_not_null(exclude)) obj <- purrr::discard_at(obj, exclude)
-  if (is_not_null(include)) obj <- purrr::keep_at(obj, include)
-  if (isTRUE(exclude_na)) obj <- discard_this(obj, rlang::is_na)
-  if (isTRUE(exclude_null)) obj <- discard_this(obj, rlang::is_null)
-  if (isTRUE(keys_to_camel_case)) obj <- keys_to_camel_case(obj)
+  if (is_not_null(exclude)) {
+    obj <- purrr::discard_at(obj, exclude)
+  }
+
+  if (is_not_null(include)) {
+    obj <- purrr::keep_at(obj, include)
+  }
+
+  if (isTRUE(exclude_na)) {
+    obj <- discard_this(obj, rlang::is_na)
+  }
+
+  if (isTRUE(exclude_null)) {
+    obj <- discard_this(obj, rlang::is_null)
+  }
+
+  if (isTRUE(by_alias)) {
+    obj <- dump_by_alias(obj, fields)
+  }
 
   return(obj)
+}
+
+# ---
+model_exclude_na <- function(obj) {
+  discard_this(obj, rlang::is_na)
 }

@@ -7,11 +7,25 @@
 check_args(...)
 }
 \arguments{
-\item{...}{description}
+\item{...}{Arg definitions.}
 }
 \value{
 The caller environment.
 }
 \description{
 Check function arguments
+}
+\examples{
+{
+  f <- function(a, b) {
+    check_args(a = is.integer, b = is.integer)
+    a + b
+  }
+
+  # Succeeds
+  f(10L, 20L)
+
+  # Fails
+  try(f(10L, 4.6))
+}
 }

@@ -24,12 +24,13 @@ Normally either \code{fields} or \code{...} is supplied.}
 
 \item{.model_pre_init}{A callback function that is executed before the type checks.}
 
-\item{.model_post_init}{description}
+\item{.model_post_init}{A callback function that is executed after the type checks.}
 
 \item{.validators_before}{A named list of field validators
 that are executed before the type checks.}
 
-\item{.validators_after}{description}
+\item{.validators_after}{A named list of field validators
+that are executed after the type checks.}
 }
 \value{
 A model factory function.

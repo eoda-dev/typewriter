@@ -2,7 +2,7 @@
 % Please edit documentation in R/experimental.R
 \name{model_validate}
 \alias{model_validate}
-\title{Validate an object}
+\title{Validate a list or a data frame}
 \usage{
 model_validate(obj, model_fn)
 }
@@ -12,5 +12,5 @@ model_validate(obj, model_fn)
 \item{model_fn}{A model factory function created with \code{\link[=base_model]{base_model()}}.}
 }
 \description{
-Validate an object
+Validate a list or a data frame
 }

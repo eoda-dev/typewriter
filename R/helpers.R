@@ -84,3 +84,24 @@ names_to_camel_case <- function(obj, .recursive = TRUE) {
 names_to_snake_case <- function(obj, .recursive = TRUE) {
   mutate_names(obj, str_to_snake_case, .recursive)
 }
+
+# ---
+dump_by_alias <- function(obj, fields = NULL) {
+  if (is.null(fields)) {
+    fields <- model_fields(obj)
+  }
+
+  l = list()
+  for (name in names(obj)) {
+    alias <- fields[[name]]$alias
+    value <- obj[[name]]
+    new_name <- ifelse(is.null(alias), name, alias)
+    if (inherits(value, CLASS_RDANTIC)) {
+      l[[new_name]] <- by_alias(value)
+    } else {
+      l[[new_name]] <- value
+    }
+  }
+
+  return(l)
+}

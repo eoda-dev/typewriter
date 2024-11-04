@@ -7,9 +7,9 @@
 model_config(allow_extra = FALSE, str_to_lower = FALSE, ...)
 }
 \arguments{
-\item{allow_extra}{description}
+\item{allow_extra}{Whether to allow extra fields without type check.}
 
-\item{str_to_lower}{description}
+\item{str_to_lower}{Convert all strings to lower case.}
 
 \item{...}{\strong{not used} at the moment}
 }
