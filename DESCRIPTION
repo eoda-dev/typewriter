@@ -22,6 +22,7 @@ Imports:
     rlang
 RoxygenNote: 7.3.2
 Suggests:
+    jsonlite,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)

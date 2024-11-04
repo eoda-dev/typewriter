@@ -91,17 +91,31 @@ dump_by_alias <- function(obj, fields = NULL) {
     fields <- model_fields(obj)
   }
 
-  l = list()
+  l <- list()
   for (name in names(obj)) {
     alias <- fields[[name]]$alias
     value <- obj[[name]]
     new_name <- ifelse(is.null(alias), name, alias)
     if (inherits(value, CLASS_RDANTIC)) {
-      l[[new_name]] <- by_alias(value)
+      l[[new_name]] <- dump_by_alias(value)
     } else {
       l[[new_name]] <- value
     }
   }
 
+  return(l)
+}
+
+# ---
+model_to_list <- function(obj) {
+  l <- list()
+  for (name in names(obj)) {
+    value <- obj[[name]]
+    if (is.list(value)) {
+      l[[name]] <- model_to_list(value)
+    } else {
+      l[[name]] <- unclass(value)
+    }
+  }
   return(l)
 }
