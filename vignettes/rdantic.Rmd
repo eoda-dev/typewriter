@@ -113,6 +113,21 @@ external_data |>
   names_to_snake_case() |>
   model_validate(api_model)
 ```
+## Models from templates
+
+```{r}
+template <- list(
+  a = 10L,
+  b = 10L,
+  txt = "Some Text"
+)
+
+my_model <- model_from_template(template, use_defaults = TRUE)
+
+my_model(a = 5L, b = 10L)
+
+try(my_model(a = 5.5))
+```
 
 ## From JSON
 
