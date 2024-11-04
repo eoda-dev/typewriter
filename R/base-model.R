@@ -20,6 +20,7 @@ model_field <- function(fn, default = NA, alias = NULL, ...) {
 #' @param str_to_lower Convert all strings to lower case.
 #' @param ... **not used** at the moment
 #' @returns A model config object that can be used in [base_model()].
+#' @example examples/api/model-config.R
 #' @export
 model_config <- function(allow_extra = FALSE,
                          str_to_lower = FALSE, ...) {
@@ -226,38 +227,17 @@ check_assignment <- function(x, name, value) {
 # }
 
 # ---
-# TODO: Deprecated?, use single functions as 'model_exclude_na'
-model_dump <- function(obj,
-                       exclude = NULL,
-                       include = NULL,
-                       exclude_na = FALSE,
-                       exclude_null = FALSE,
-                       by_alias = FALSE) {
-  fields <- model_fields(obj)
-
-  if (is_not_null(exclude)) {
-    obj <- purrr::discard_at(obj, exclude)
-  }
-
-  if (is_not_null(include)) {
-    obj <- purrr::keep_at(obj, include)
-  }
-
-  if (isTRUE(exclude_na)) {
-    obj <- discard_this(obj, rlang::is_na)
-  }
-
-  if (isTRUE(exclude_null)) {
-    obj <- discard_this(obj, rlang::is_null)
-  }
-
+#' Convert model to base list
+#' @param by_alias Use aliases for names.
+#' @param ... **not used** at the moment.
+#' @returns base list object
+#' @export
+model_dump <- function(obj, by_alias = FALSE, ...) {
   if (isTRUE(by_alias)) {
-    obj <- dump_by_alias(obj, fields)
-  } else {
-    obj <- model_to_list(obj)
+    return(dump_by_alias(obj))
   }
 
-  return(obj)
+  return(model_to_list(obj))
 }
 
 # ---
