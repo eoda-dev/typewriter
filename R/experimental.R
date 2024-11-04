@@ -175,19 +175,12 @@ print.rdantic <- function(x, ...) {
 }
 
 # ---
-check_model_value <- function(x, name, value) {
+check_assignment <- function(x, name, value) {
   fields <- model_fields(x)
   type_check_fn <- rlang::as_function(fields[[name]]$fn)
-
-  # TODO: Duplicated code
-  if (rlang::is_primitive(type_check_fn)) {
-    text_fn <- rlang::quo_text(type_check_fn)
-  } else {
-    text_fn <- rlang::quo_text(rlang::fn_body(type_check_fn))
-  }
-
+  fn_text <- get_fn_text(type_check_fn)
   if (isFALSE(type_check_fn(value))) {
-    stop(paste0("Type check failed.\n", text_fn))
+    stop(paste0("Type check failed.\n", fn_text))
   }
 }
 
@@ -198,7 +191,7 @@ check_model_value <- function(x, name, value) {
     return(x)
   }
 
-  check_model_value(x, name, value)
+  check_assignment(x, name, value)
   NextMethod()
 }
 
@@ -209,7 +202,7 @@ check_model_value <- function(x, name, value) {
     return(x)
   }
 
-  check_model_value(x, name, value)
+  check_assignment(x, name, value)
   NextMethod()
 }
 
