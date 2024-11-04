@@ -27,10 +27,12 @@ person_model <- base_model(
   age = is_scalar_integer
 )
 
-person_model(
+(m <- person_model(
   name = "Lee",
   age = 100L
-)
+))
+
+try(m$age <- 100)
 
 try(person_model(name = "Lee", age = 100))
 
