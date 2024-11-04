@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 # rdantic
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/eodaGmbH/rdantic/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/eodaGmbH/rdantic/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/eoda-dev/rdantic/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/eoda-dev/rdantic/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of rdantic is to add type safety to your R code.
@@ -42,7 +42,10 @@ my_model <- base_model(
   b = is_integer
 )
 
-my_model(a = 2L, b = 4L)
+(m <- my_model(a = 2L, b = 4L))
+
+try(m$a <- 10.5)
+
 try(my_model(a = 2L, b = 4.5))
 
 # Functions
@@ -59,7 +62,7 @@ try(f(5L, c(3L, 4L)))
 
 # Data frames
 df <- data.frame(
-  id = 1:3L,
+  id = 1:3,
   letter = letters[1:3]
 )
 

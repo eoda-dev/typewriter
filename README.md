@@ -5,7 +5,7 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/eodaGmbH/rdantic/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/eodaGmbH/rdantic/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/eoda-dev/rdantic/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/eoda-dev/rdantic/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of rdantic is to add type safety to your R code.
@@ -32,7 +32,7 @@ my_model <- base_model(
   b = is_integer
 )
 
-my_model(a = 2L, b = 4L)
+(m <- my_model(a = 2L, b = 4L))
 #> $a
 #> [1] 2
 #> 
@@ -41,6 +41,16 @@ my_model(a = 2L, b = 4L)
 ```
 
 ``` r
+
+try(m$a <- 10.5)
+#> Error in check_assignment(x, name, value) : Type check failed.
+#> {
+#>     .Call(ffi_is_integer, x, n)
+#> }
+```
+
+``` r
+
 try(my_model(a = 2L, b = 4.5))
 #> Error in my_model(a = 2L, b = 4.5) : Type check(s) failed
 #> # ---
@@ -85,7 +95,7 @@ try(f(5L, c(3L, 4L)))
 
 # Data frames
 df <- data.frame(
-  id = 1:3L,
+  id = 1:3,
   letter = letters[1:3]
 )
 
