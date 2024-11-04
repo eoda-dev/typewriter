@@ -1,19 +1,49 @@
+# ---
+#' Type predicate `any`
+#' @param x Object to be tested.
+#' @returns `TRUE`
+#' @examples
+#' my_model <- base_model(
+#'   a = is_any,
+#'   b = is.integer
+#' )
+#'
+#' # Succeeds
+#' my_model(a = 10, b = 20L)
+#'
+#' # Also succeeds
+#' my_model(a = "Hi", b = 20L)
+#'
+#' @export
 is_any <- function(x) TRUE
 
 # ---
-#' Mark a field as optional
-#' @param .f type check function
-#' @export
-is_optional <- function(.f) {
-  f_name <- deparse(substitute(.f))
-  eval(parse(text = paste0("function(x) ", f_name, "(x) | is.null(x)")))
+# DEPRECATED
+is_optional <- function(fn) {
+  fn_name <- deparse(substitute(fn))
+  eval(parse(text = paste0("function(x) ", fn_name, "(x) | is.null(x)")))
 }
 
-is_optional2 <- function(.f) set_attributes(.f, optional = TRUE)
+# ---
+optional_field <- function(type_check_fn) {
+  function(x) {
+    type_check_fn(x) | is.null(x) | rlang::is_na(x)
+  }
+}
 
-#' Check another model inside a model
-#' @param .model model to check
+#' Type predicate `rdantic model`
+#' @param model_fn A model factory function created with [base_model()].
 #' @export
-is_another_model <- function(.model) {
-  function(x) is.list(.model(x))
+is_rdantic_model <- function(model_fn) {
+  function(x) {
+    is.list(model_validate(x, model_fn))
+  }
+}
+
+# ---
+dtype_integer <- function(n = NULL) {
+  fn <- function(x) {
+    typeof(x) == "integer" & length(x) == n
+  }
+  structure(fn, dtype = "integer", n = n)
 }

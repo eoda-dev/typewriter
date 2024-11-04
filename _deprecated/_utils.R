@@ -34,13 +34,6 @@ keys_to_camel_case <- function(x, .recursive = TRUE) {
 }
 
 # ---
-
-set_attributes <- function(x, ...) {
-  attributes(x) <- c(attributes(x), list(...))
-  return(x)
-}
-
-# ---
 camels_to_snakes <- function(strings) {
   gsub(" ", "_", tolower(gsub("(.)([A-Z])", "\\1 \\2", strings)))
 }
@@ -49,6 +42,7 @@ keys_to_snake_case_DEPRECATED <- function(x) {
   stats::setNames(x, camels_to_snakes(names(x)))
 }
 
+# TODO: Rename to 'names_to_snakes'
 #' Convert keys to snake case
 #' @param x list
 #' @param .recursive Whether to convert keys on all levels.
@@ -66,4 +60,19 @@ keys_to_snake_case <- function(x, .recursive = TRUE) {
   }
 
   return(l)
+}
+
+# ---
+discard_this2 <- function(x, fn = rlang::is_na) {
+  l <- list()
+  for (name in names(x)) {
+    value <- x[[name]]
+    if (is.list(value)) {
+      l[[name]] <- discard_this(value, fn)
+    } else {
+      l[[name]] <- value
+    }
+  }
+
+  return(purrr::discard(l, fn))
 }

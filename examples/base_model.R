@@ -15,15 +15,16 @@ x <- list(
   txt = NULL
 )
 
-my_model(x, .drop_null = FALSE)
-my_model(a = 10, b = 20, txt = c("Hi", "guys"), .drop_null = FALSE)
+my_model(x)
+my_model(a = 10, b = 20, txt = c("Hi", "guys"))
 
 f <- function(a, b, txt) {
-  args <- my_model(environment(), .force_list = FALSE)
+  args <- my_model(environment())
   return(args)
 }
 
-f(10, "20", "yes")
+e <- f(10, 20, "yes")
+e$args
 
 # ---
 another_model <- base_model(

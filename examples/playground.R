@@ -18,7 +18,7 @@ f("1", 4)
 
 f3 <- function(a # is.numeric
                , b # is.numeric
-  ) {}
+) {}
 
 k <- attr(f3, "srcref") |>
   as.character() |>
@@ -26,4 +26,4 @@ k <- attr(f3, "srcref") |>
   stringr::str_remove_all(" ") |>
   stringr::str_extract_all("\\([^()]+\\)")
 
-substring(k[[1]], 2, nchar(k[[1]])-1) |> stringr::str_split(",")
+substring(k[[1]], 2, nchar(k[[1]]) - 1) |> stringr::str_split(",")

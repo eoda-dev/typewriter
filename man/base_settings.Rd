@@ -2,20 +2,20 @@
 % Please edit documentation in R/base-settings.R
 \name{base_settings}
 \alias{base_settings}
-\title{Create settings}
+\title{Create a settings factory function}
 \usage{
 base_settings(..., .prefix = "")
 }
 \arguments{
-\item{...}{env vars and their type convertors}
+\item{...}{env vars and their type converter functions}
 
 \item{.prefix}{prefix of env vars}
 }
 \value{
-settings function
+settings factory function
 }
 \description{
-Create settings
+Create a settings factory function
 }
 \examples{
 Sys.setenv(POSTGRES_USERNAME = "postgres")
@@ -29,5 +29,11 @@ postgres_settings <- base_settings(
   .prefix = "POSTGRES"
 )
 
+# Succeeds
 postgres_settings()
+
+Sys.setenv(POSTGRES_PORT = "")
+
+# Fails
+try(postgres_settings())
 }

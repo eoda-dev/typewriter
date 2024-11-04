@@ -1,3 +1,4 @@
+# ---
 test_that("snakes to camels", {
   # Prepare
   l <- list(
@@ -8,13 +9,14 @@ test_that("snakes to camels", {
   )
 
   # Act
-  l_camels <- keys_to_camel_case(l)
+  l_camels <- names_to_camel_case(l)
 
   # Assert
   expect_equal(names(l_camels), c("snakeCase", "camelCase", "isSnakeCase", "isCamelCase"))
   expect_equal(l_camels$isCamelCase$moreSnakes, "yeah")
 })
 
+# ---
 test_that("camels to snakes", {
   # Prepare
   from_json <- list(
@@ -23,8 +25,27 @@ test_that("camels to snakes", {
   )
 
   # Act
-  res <- keys_to_snake_case(from_json)
+  res <- names_to_snake_case(from_json)
 
   # Assert
   expect_equal(res, list(convert_me_to_snakes = "okay", this_is_snake_case = "yes"))
+})
+
+# ---
+test_that("discard recursive", {
+  # Prepare
+  l <- list(
+    a = 10,
+    b = NA,
+    x = list(
+      aa = 20,
+      bb = NA
+    )
+  )
+
+  # Act
+  res <- discard_this(l, rlang::is_na)
+
+  # Assert
+  expect_equal(res, list(a = 10, x = list(aa = 20)))
 })

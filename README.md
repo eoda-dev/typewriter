@@ -5,7 +5,7 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/eodaGmbH/rdantic/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/eodaGmbH/rdantic/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/eoda-dev/rdantic/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/eoda-dev/rdantic/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of rdantic is to add type safety to your R code.
@@ -17,23 +17,22 @@ You can install the development version of rdantic from
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("eodaGmbH/rdantic")
+devtools::install_github("eoda-dev/rdantic")
 ```
 
 ## Examples
-
-### Models
 
 ``` r
 library(rdantic)
 library(rlang)
 
-numbers <- base_model(
+# Models
+my_model <- base_model(
   a = is_integer,
   b = is_integer
 )
 
-numbers(a = 2L, b = 4L)
+(m <- my_model(a = 2L, b = 4L))
 #> $a
 #> [1] 2
 #> 
@@ -43,162 +42,86 @@ numbers(a = 2L, b = 4L)
 
 ``` r
 
-try(numbers(a = 2L, b = 4.5))
-#> Error in raise_type_check_error(k, value, type_check) : 
-#>   Type check failed.
-#> ℹ field: b
-#> ✖ value: 4.5
-#> ✖ test: function (x, n = NULL) { .Call(ffi_is_integer, x, n) }
+try(m$a <- 10.5)
+#> Error in check_assignment(x, name, value) : Type check failed.
+#> {
+#>     .Call(ffi_is_integer, x, n)
+#> }
 ```
 
 ``` r
 
-my_model <- base_model(
-  convert_me_to_camel_case = is_scalar_character,
-  a = is_optional(is_integer),
-  b = is_integer,
-  txt = is_scalar_character
-)
-
-(m <- my_model(convert_me_to_camel_case = "okay", b = 10L, txt = "Hi"))
-#> $convert_me_to_camel_case
-#> [1] "okay"
-#> 
-#> $b
-#> [1] 10
-#> 
-#> $txt
-#> [1] "Hi"
-#> 
-#> $a
-#> NULL
+try(my_model(a = 2L, b = 4.5))
+#> Error in my_model(a = 2L, b = 4.5) : Type check(s) failed
+#> # ---
+#> Type check failed for 'b'
+#> value:  num 4.5
+#> type: double
+#> length: 1
+#> {
+#>     .Call(ffi_is_integer, x, n)
+#> }
 ```
 
 ``` r
 
-m |> model_dump(exclude_null = TRUE, camels = TRUE)
-#> $convertMeToCamelCase
-#> [1] "okay"
-#> 
-#> $b
-#> [1] 10
-#> 
-#> $txt
-#> [1] "Hi"
-```
-
-``` r
-
-m |> model_dump(include = c("a", "b"))
-#> $b
-#> [1] 10
-#> 
-#> $a
-#> NULL
-```
-
-### Type safety inside functions
-
-``` r
-add_two_numbers <- function(a, b) {
-  validate_args(
-    a = is_scalar_double,
-    b = is_scalar_double
+# Functions
+f <- function(a, b = 5L) {
+  check_args(
+    a = is_integer,
+    b = is_scalar_integer
   )
   a + b
 }
 
-add_two_numbers(2, 4)
-#> [1] 6
+f(5L)
+#> [1] 10
+```
+
+``` r
+try(f(5L, c(3L, 4L)))
+#> Error in base_model(fields)(.x = e) : Type check(s) failed
+#> # ---
+#> Type check failed for 'b'
+#> value:  int [1:2] 3 4
+#> type: integer
+#> length: 2
+#> {
+#>     .Call(ffi_is_integer, x, 1L)
+#> }
 ```
 
 ``` r
 
-try(add_two_numbers(2, c(2, 4)))
-#> Error in raise_type_check_error(k, value, type_check) : 
-#>   Type check failed.
-#> ℹ field: b
-#> ✖ value: c(2, 4)
-#> ✖ test: function (x) { .Call(ffi_is_double, x, 1L, NULL) }
-```
-
-``` r
-
-devide_two_numbers <- function(a, b) {
-  validate_args(
-    a = is_double,
-    b = ~ is_double(.x) & .x != 0
-  )
-  a / b
-}
-
-devide_two_numbers(4, 2)
-#> [1] 2
-```
-
-``` r
-
-try(devide_two_numbers(4, 0))
-#> Error in raise_type_check_error(k, value, type_check) : 
-#>   Type check failed.
-#> ℹ field: b
-#> ✖ value: 0
-#> ✖ test: structure(function (..., .x = ..1, .y = ..2, . = ..1) is_double(.x) &
-#>   .x != 0, class = c("rlang_lambda_function", "function" ))
-```
-
-``` r
-
-# Add validators
-
-devide_two_numbers <- function(a, b) {
-  validate_args(
-    a = is_double,
-    b = is_double,
-    .validators_after = list(
-      b = ~ ifelse(.x == 0, 1, .x)
-    )
-  )
-  a / b
-}
-
-devide_two_numbers(4, 0)
-#> [1] 4
-```
-
-### Get settings from env vars
-
-``` r
-Sys.setenv(POSTGRES_USERNAME = "postgres")
-Sys.setenv(POSTGRES_PASSWORD = "superSecret!")
-Sys.setenv(POSTGRES_PORT = 15432)
-
-postgres_settings <- base_settings(
-  username = as.character,
-  password = as.character,
-  port = as.integer,
-  .prefix = "POSTGRES"
+# Data frames
+df <- data.frame(
+  id = 1:3,
+  letter = letters[1:3]
 )
 
-postgres_settings()
-#> $username
-#> [1] "postgres"
-#> 
-#> $password
-#> [1] "superSecret!"
-#> 
-#> $port
-#> [1] 15432
+my_model <- base_model(
+  id = is_integer,
+  letter = is_character
+)
+
+df |> model_validate(my_model)
+#>   id letter
+#> 1  1      a
+#> 2  2      b
+#> 3  3      c
 ```
 
 ``` r
 
-Sys.setenv(POSTGRES_PORT = "")
-
-try(postgres_settings())
-#> Error in raise_type_check_error(env_var_name, .obj[[k]], as_type) : 
-#>   Type check failed.
-#> ℹ field: POSTGRES_PORT
-#> ✖ value: NA_integer_
-#> ✖ test: as.integer
+df$id <- as.double(df$id)
+try(df |> model_validate(my_model))
+#> Error in model_fn(.x = obj) : Type check(s) failed
+#> # ---
+#> Type check failed for 'id'
+#> value:  num [1:3] 1 2 3
+#> type: double
+#> length: 3
+#> {
+#>     .Call(ffi_is_integer, x, n)
+#> }
 ```

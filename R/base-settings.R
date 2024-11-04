@@ -7,17 +7,19 @@ get_settings <- function(types, prefix = "") {
       .obj[[k]] <- as_type(Sys.getenv(env_var_name))
 
       # Do not allow NA
-      if (is.na(.obj[[k]])) raise_type_check_error(env_var_name, .obj[[k]], as_type)
+      if (is.na(.obj[[k]])) {
+        stop(glue::glue("{k} = {.obj[[k]]}"))
+      }
     }
 
     return(.obj)
   }
 }
 
-#' Create settings
-#' @param ... env vars and their type convertors
+#' Create a settings factory function
+#' @param ... env vars and their type converter functions
 #' @param .prefix prefix of env vars
-#' @return settings function
+#' @returns settings factory function
 #' @example examples/api/base-settings.R
 #' @export
 base_settings <- function(..., .prefix = "") {
