@@ -7,6 +7,8 @@
 model_dump(obj, by_alias = FALSE, ...)
 }
 \arguments{
+\item{obj}{An rdantic model object}
+
 \item{by_alias}{Use aliases for names.}
 
 \item{...}{\strong{not used} at the moment.}

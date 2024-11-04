@@ -228,6 +228,7 @@ check_assignment <- function(x, name, value) {
 
 # ---
 #' Convert model to base list
+#' @param obj An rdantic model object
 #' @param by_alias Use aliases for names.
 #' @param ... **not used** at the moment.
 #' @returns base list object
