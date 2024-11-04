@@ -91,7 +91,7 @@ dump_by_alias <- function(obj, fields = NULL) {
     fields <- model_fields(obj)
   }
 
-  l = list()
+  l <- list()
   for (name in names(obj)) {
     alias <- fields[[name]]$alias
     value <- obj[[name]]
@@ -108,10 +108,10 @@ dump_by_alias <- function(obj, fields = NULL) {
 
 # ---
 model_to_list <- function(obj) {
-  l = list()
+  l <- list()
   for (name in names(obj)) {
     value <- obj[[name]]
-    if(is.list(value)) {
+    if (is.list(value)) {
       l[[name]] <- model_to_list(value)
     } else {
       l[[name]] <- unclass(value)

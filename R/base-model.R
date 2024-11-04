@@ -253,7 +253,7 @@ model_dump <- function(obj,
 
   if (isTRUE(by_alias)) {
     obj <- dump_by_alias(obj, fields)
-  } else{
+  } else {
     obj <- model_to_list(obj)
   }
 
