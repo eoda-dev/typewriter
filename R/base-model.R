@@ -7,7 +7,8 @@ model_fields <- function(model_fn) {
 #' Create a model field
 #' @param fn A type check function.
 #' @param default A default value for the field.
-#' @param alias,... **not used** at the moment
+#' @param alias alias that can be used in [model_dump()]
+#' @param ... **not used** at the moment
 #' @export
 model_field <- function(fn, default = NA, alias = NULL, ...) {
   l <- as.list(environment())
