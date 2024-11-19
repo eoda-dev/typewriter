@@ -3,6 +3,7 @@
 #' @param template A template list to derive model from.
 #' @param use_defaults Whether to use template values as default values.
 #' @param use_length **not used** at the moment
+#' @param optional Logical whether all or no variable is optional. Alternative a vector of names of values that are optional.
 #' @inherit base_model return
 #' @example examples/api/model-from-template.R
 #' @export
