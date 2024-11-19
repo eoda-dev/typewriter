@@ -66,7 +66,7 @@ base_model <- function(fields = list(), ...,
   #   return(.x)
   # })
 
-  fields <- Map(function(.x){
+  fields <- Map(function(.x) {
     if (inherits(.x, c("function", "formula"))) {
       return(model_field(fn = .x))
     }
@@ -83,7 +83,7 @@ base_model <- function(fields = list(), ...,
   }, fields)
 
   # model_args <- purrr::map(fields, ~ .x$default)
-  model_args <- Map(function(x){
+  model_args <- Map(function(x) {
     x$default
   }, fields)
   # Create model factory function

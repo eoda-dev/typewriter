@@ -132,7 +132,7 @@ map_depth_base <- function(.x, .depth, .f) {
   if (.depth == 0) {
     # At depth 0, apply the function to the entire list
     return(.f(.x))
-  } else if(.depth == 1){
+  } else if (.depth == 1) {
     return(lapply(.x, .f))
   } else {
     # Recurse deeper into the list
@@ -140,7 +140,7 @@ map_depth_base <- function(.x, .depth, .f) {
       if (is.list(element)) {
         map_depth_base(element, .depth - 1, .f)
       } else {
-        .f(element)  # Keep non-list elements unchanged
+        .f(element) # Keep non-list elements unchanged
       }
     }))
   }

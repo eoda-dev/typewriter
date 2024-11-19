@@ -1,16 +1,16 @@
 # ---
 # TODO: Deprecated?, use single functions as 'model_exclude_na'
 model_dump_ <- function(obj,
-                       exclude = NULL,
-                       include = NULL,
-                       exclude_na = FALSE,
-                       exclude_null = FALSE,
-                       by_alias = FALSE) {
+                        exclude = NULL,
+                        include = NULL,
+                        exclude_na = FALSE,
+                        exclude_null = FALSE,
+                        by_alias = FALSE) {
   fields <- model_fields(obj)
 
   if (is_not_null(exclude)) {
     # obj <- purrr::discard_at(obj, exclude)
-    obj <- obj[names(obj)!=exclude]
+    obj <- obj[names(obj) != exclude]
   }
 
   if (is_not_null(include)) {
