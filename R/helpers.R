@@ -39,8 +39,7 @@ discard_this <- function(x, fn = rlang::is_na) {
     }
   }
 
-  return(x[!unlist(Map(rlang::is_na, x))])
-  # return(purrr::discard(x, fn))
+  return(x[!unlist(Map(fn, x))])
 }
 
 # ---
@@ -146,5 +145,3 @@ map_depth_base <- function(.x, .depth, .f) {
     }))
   }
 }
-
-
