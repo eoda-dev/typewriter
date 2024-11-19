@@ -32,49 +32,26 @@ template <- list(
   b = 10L
 )
 
+
+my_model <- model_from_template(template)
+# Succeeds
+my_model(a = c(1:10), b = 7L)
+
+# Fails
+try(my_model(10, 8))
+
+
 # Set values to optional
 my_model <- model_from_template(template, optional = TRUE)
 my_model(a = 12L) # returns NA for b
 
 # When optional is set to FALSE the model throws an error
 my_model <- model_from_template(template, optional = FALSE)
-my_model(a = 12L) # returns NA for b
-
+try(my_model(a = 12L)) # returns NA for b
 
 
 # Use defaults if none provided
 my_model <- model_from_template(template, use_defaults = TRUE, optional = FALSE)
 my_model(a = 12L)
 
-my_model0 <- model_from_template(template, use_defaults = FALSE, optional = FALSE)
-my_model0(a = 12L)
-
-my_model0 <- model_from_template(template, use_defaults = FALSE, optional = c("b"))
-my_model0(a = 12L)
-
-my_model0 <- model_from_template(template, use_defaults = FALSE, optional = c("a","b"))
-my_model0()
-
-
-attributes(my_model0)
-
-my_model <- model_from_template(mtcars, use_defaults = FALSE)
-my_model2 <- model_from_template(mtcars[,c(1,2)], use_defaults = FALSE)
-
-# Succeeds
-my_model(a = c(1:10))
-
-# Fails
-try(my_model(10))
-
-my_model(mtcars)
-
-mtcars |> model_validate(my_model2)
-
-
-model0 <- model_from_template(mtcars)
-
-apply(mtcars, 1, function(x) model0(.x = x))
-
-base_model(mpg)
 }

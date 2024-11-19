@@ -2,11 +2,14 @@ template <- list(
   a = 10L,
   b = 10L
 )
+
+
+my_model <- model_from_template(template)
 # Succeeds
-my_model(a = c(1:10))
+my_model(a = c(1:10), b = 7L)
 
 # Fails
-try(my_model(10))
+try(my_model(10, 8))
 
 
 # Set values to optional
