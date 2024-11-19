@@ -49,7 +49,23 @@ base_model <- function(fields = list(), ...,
                        .validators_before = list(),
                        .validators_after = list()) {
   fields <- utils::modifyList(fields, list(...), keep.null = TRUE)
-  fields <- purrr::map(fields, ~ {
+  # fields1 <- purrr::map(fields, ~ {
+  #   if (inherits(.x, c("function", "formula"))) {
+  #     return(model_field(fn = .x))
+  #   }
+  #
+  #   if (inherits(.x, CLASS_RDANTIC_MODEL)) {
+  #     model_fn <- .x
+  #     fn <- function(x) {
+  #       is.list(model_validate(x, model_fn))
+  #     }
+  #     return(model_field(fn = fn))
+  #   }
+  #
+  #   return(.x)
+  # })
+
+  fields <- Map(function(.x){
     if (inherits(.x, c("function", "formula"))) {
       return(model_field(fn = .x))
     }
@@ -63,10 +79,12 @@ base_model <- function(fields = list(), ...,
     }
 
     return(.x)
-  })
+  }, fields)
 
-  model_args <- purrr::map(fields, ~ .x$default)
-
+  # model_args <- purrr::map(fields, ~ .x$default)
+  model_args <- Map(function(x){
+    x$default
+  }, fields)
   # Create model factory function
   model_fn <- rlang::new_function(c(model_args, alist(... = , .x = NULL)), quote({
     if (is_not_null(.x)) {
@@ -105,7 +123,8 @@ base_model <- function(fields = list(), ...,
     obj <- validate_fields(obj, .validators_after)
 
     if (isTRUE(.model_config$str_to_lower)) {
-      obj <- purrr::map_depth(obj, -1, str_to_lower)
+      # obj <- purrr::map_depth(obj, -1, str_to_lower)
+      obj <- map_depth_base(obj, -1, str_to_lower)
     }
 
     if (length(errors) > 0) {
@@ -118,7 +137,8 @@ base_model <- function(fields = list(), ...,
     }
 
     if (isFALSE(.model_config$allow_extra)) {
-      obj <- purrr::keep_at(obj, names(fields))
+      # obj <- purrr::keep_at(obj, names(fields))
+      obj <- obj[names(fields)]
     }
 
     if (is_not_null(.model_post_init)) {
@@ -163,7 +183,7 @@ check_args <- function(...) {
   if (length(fields) == 0) {
     fn <- rlang::caller_fn()
     fmls <- rlang::fn_fmls(fn)
-    fields <- purrr::map(as.list(fmls), eval)
+    fields <- Map(eval, as.list(fmls))
   }
 
   e <- rlang::caller_env()

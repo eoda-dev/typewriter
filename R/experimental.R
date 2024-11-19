@@ -9,11 +9,13 @@ model_dump_ <- function(obj,
   fields <- model_fields(obj)
 
   if (is_not_null(exclude)) {
-    obj <- purrr::discard_at(obj, exclude)
+    # obj <- purrr::discard_at(obj, exclude)
+    obj <- obj[names(obj)!=exclude]
   }
 
   if (is_not_null(include)) {
-    obj <- purrr::keep_at(obj, include)
+    # obj <- purrr::keep_at(obj, include)
+    obj <- obj[include]
   }
 
   if (isTRUE(exclude_na)) {

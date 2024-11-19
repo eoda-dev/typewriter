@@ -1,4 +1,3 @@
-devtools::load_all()
 
 f <- function(a, b = 80L) {
   check_args(a = is.integer, b = is.integer)
@@ -46,18 +45,3 @@ external_data |>
   model_validate(my_api_model) |>
   model_dump(by_alias = TRUE)
 
-# ---
-blocks <- roxygen2::parse_file("R/helpers.R")
-param_tags <- roxygen2::block_get_tags(blocks[[1]], "param")
-
-purrr::map(param_tags, ~ list(n = .x$val$name, d = .x$val$description))
-
-# roxygen2::block_has_tags(blocks)
-
-# ---
-l <- list(
-  snake_here = 10,
-  x = list(snake_again = 20)
-)
-
-purrr::map_depth(names(l), -1, names_to_camel_case)
