@@ -18,13 +18,18 @@
 is_any <- function(x) TRUE
 
 # ---
-# DEPRECATED
+#' Mark a parameter as optional
+#' @param fn Type check function
+#' @example examples/api/type-is-optional.R
+#' @returns type check function
+#' @export
 is_optional <- function(fn) {
   fn_name <- deparse(substitute(fn))
-  eval(parse(text = paste0("function(x) ", fn_name, "(x) | is.null(x)")))
+  eval(parse(text = paste0("function(x) ", fn_name, "(x) | rlang::is_na(x)")))
 }
 
 # ---
+# DEPRECATED
 optional_field <- function(type_check_fn) {
   function(x) {
     type_check_fn(x) | is.null(x) | rlang::is_na(x)
