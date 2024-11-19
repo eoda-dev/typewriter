@@ -18,7 +18,6 @@ Encoding: UTF-8
 LazyData: true
 Imports:
     glue,
-    purrr,
     rlang
 RoxygenNote: 7.3.2
 Suggests:

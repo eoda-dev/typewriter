@@ -25,5 +25,5 @@ create_type_check_error_message <- function(error) {
 
 # ---
 map_type_check_errors <- function(errors) {
-  unlist(purrr::map(unname(errors), create_type_check_error_message))
+  unlist(Map(create_type_check_error_message, unname(errors)))
 }

@@ -19,13 +19,15 @@ is_not_null <- function(x) {
 
 # ---
 to_raw_list <- function(x) {
-  purrr::keep_at(x, seq_along(x))
+  # purrr::keep_at(x, seq_along(x))
+  x[seq_along(x)]
 }
 
 # ---
 map_items <- function(x, fn) {
-  purrr::map2(names(x), x, fn) |>
-    rlang::set_names(names(x))
+  rlang::set_names(Map(fn, names(x), x), names(x))
+  # purrr::map2(names(x), x, fn) |>
+  #   rlang::set_names(names(x))
 }
 
 # ---
@@ -37,7 +39,8 @@ discard_this <- function(x, fn = rlang::is_na) {
     }
   }
 
-  return(purrr::discard(x, fn))
+  return(x[!unlist(Map(rlang::is_na, x))])
+  # return(purrr::discard(x, fn))
 }
 
 # ---
@@ -119,3 +122,29 @@ model_to_list <- function(obj) {
   }
   return(l)
 }
+
+
+# ---
+map_depth_base <- function(.x, .depth, .f) {
+  if (!is.list(.x)) {
+    stop(".x must be a list.")
+  }
+
+  if (.depth == 0) {
+    # At depth 0, apply the function to the entire list
+    return(.f(.x))
+  } else if(.depth == 1){
+    return(lapply(.x, .f))
+  } else {
+    # Recurse deeper into the list
+    return(lapply(.x, function(element) {
+      if (is.list(element)) {
+        map_depth_base(element, .depth - 1, .f)
+      } else {
+        .f(element)  # Keep non-list elements unchanged
+      }
+    }))
+  }
+}
+
+
