@@ -21,5 +21,5 @@ my_model <- base_model(
   b = is_optional(is.integer)
 )
 
-my_model(a = 10)
+my_model(a = 10L)
 }
