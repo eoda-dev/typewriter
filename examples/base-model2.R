@@ -41,7 +41,7 @@ external_data <- list(
 
 my_api_model(.x = external_data)
 
-external_data |>
-  model_validate(my_api_model) |>
-  model_dump(by_alias = TRUE)
+model_dump(model_validate(external_data,
+                          my_api_model),
+           by_alias = TRUE)
 

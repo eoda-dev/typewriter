@@ -25,8 +25,7 @@ to_raw_list <- function(x) {
 
 # ---
 map_items <- function(x, fn) {
-  Map(fn, names(x), x) |>
-    rlang::set_names(names(x))
+  rlang::set_names(Map(fn, names(x), x), names(x))
   # purrr::map2(names(x), x, fn) |>
   #   rlang::set_names(names(x))
 }

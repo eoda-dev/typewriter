@@ -104,7 +104,7 @@ my_model <- base_model(
   letter = is_character
 )
 
-df |> model_validate(my_model)
+model_validate(df, my_model)
 #>   id letter
 #> 1  1      a
 #> 2  2      b
@@ -114,7 +114,7 @@ df |> model_validate(my_model)
 ``` r
 
 df$id <- as.double(df$id)
-try(df |> model_validate(my_model))
+try(df, model_validate(my_model))
 #> Error in model_fn(.x = obj) : Type check(s) failed
 #> # ---
 #> Type check failed for 'id'

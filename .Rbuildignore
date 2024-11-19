@@ -9,3 +9,5 @@ _NAMESPACE
 ^docs$
 ^pkgdown$
 _deprecated/
+^doc$
+^Meta$
