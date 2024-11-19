@@ -87,12 +87,8 @@ base_model <- function(fields = list(), ...,
     for (name in names(fields)) {
       check_type_fn <- rlang::as_function(fields[[name]]$fn)
       obj_value <- obj[[name]]
-      check_results <- check_type_fn(obj_value)
 
-      if(length(check_results) > 1) {
-        stop("Check returned more than one TRUE or FALSE")
-      }
-      if (isFALSE(check_results)) {
+      if (!isTRUE(all(check_type_fn(obj_value)))) {
         errors[[name]] <- list(
           name = name,
           value = obj_value,
