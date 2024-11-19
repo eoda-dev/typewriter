@@ -71,8 +71,8 @@ my_model <- base_model(
   letter = is_character
 )
 
-df |> model_validate(my_model)
+model_validate(df, my_model)
 
 df$id <- as.double(df$id)
-try(df |> model_validate(my_model))
+try(model_validate(df, my_model))
 ```
