@@ -11,7 +11,9 @@ model_field(fn, default = NA, alias = NULL, ...)
 
 \item{default}{A default value for the field.}
 
-\item{alias, ...}{\strong{not used} at the moment}
+\item{alias}{alias that can be used in \code{\link[=model_dump]{model_dump()}}}
+
+\item{...}{\strong{not used} at the moment}
 }
 \description{
 Create a model field
