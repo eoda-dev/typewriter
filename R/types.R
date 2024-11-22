@@ -20,12 +20,15 @@ is_any <- function(x) TRUE
 # ---
 #' Mark a parameter as optional
 #' @param fn Type check function
+#' @param allow_null Whether `NA` and `NULL` are allowed for an optional parameter
 #' @example examples/api/type-is-optional.R
 #' @returns type check function
 #' @export
-is_optional <- function(fn) {
+is_optional <- function(fn, allow_null = FALSE) {
   fn_name <- deparse(substitute(fn))
-  eval(parse(text = paste0("function(x) ", fn_name, "(x) | rlang::is_na(x)")))
+  check_optional <- ifelse(allow_null, "rlang::is_na(x) | is.null(x)", "rlang::is_na(x)")
+  # eval(parse(text = paste0("function(x) ", fn_name, "(x) | rlang::is_na(x)")))
+  eval(parse(text = paste0("function(x) ", fn_name, "(x) | ", check_optional)))
 }
 
 # ---

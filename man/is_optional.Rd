@@ -4,10 +4,12 @@
 \alias{is_optional}
 \title{Mark a parameter as optional}
 \usage{
-is_optional(fn)
+is_optional(fn, allow_null = FALSE)
 }
 \arguments{
 \item{fn}{Type check function}
+
+\item{allow_null}{Whether \code{NA} and \code{NULL} are allowed for an optional parameter}
 }
 \value{
 type check function
