@@ -40,6 +40,9 @@ model_config <- function(allow_extra = FALSE,
 #'  that are executed before the type checks.
 #' @param .validators_after A named list of field validators
 #'  that are executed after the type checks.
+#' @param .strict_args_order If set to `TRUE`, the `.x` parameter
+#'  of the returned model factory function will be the last function argument.
+#'  This is useful if you want to pass the arguments unnamed.
 #' @returns A model factory function.
 #' @example examples/api/base-model.R
 #' @export
@@ -48,7 +51,8 @@ base_model <- function(fields = list(), ...,
                        .model_pre_init = NULL,
                        .model_post_init = NULL,
                        .validators_before = list(),
-                       .validators_after = list()) {
+                       .validators_after = list(),
+                       .strict_args_order = FALSE) {
   fields <- utils::modifyList(fields, list(...), keep.null = TRUE)
   # fields1 <- purrr::map(fields, ~ {
   #   if (inherits(.x, c("function", "formula"))) {
@@ -86,8 +90,15 @@ base_model <- function(fields = list(), ...,
   model_args <- Map(function(x) {
     x$default
   }, fields)
+  # fn_args <- c(model_args, alist(... = , .x = NULL))
+  fn_args <- c(alist(.x = NULL), model_args, alist(... = ))
+  if (isTRUE(.strict_args_order)) {
+    fn_args <- c(model_args, alist(... = , .x = NULL))
+  }
+
+  # ---
   # Create model factory function
-  model_fn <- rlang::new_function(c(model_args, alist(... = , .x = NULL)), quote({
+  model_fn <- rlang::new_function(fn_args, quote({
     if (is_not_null(.x)) {
       obj <- .x
     } else {

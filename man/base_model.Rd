@@ -11,7 +11,8 @@ base_model(
   .model_pre_init = NULL,
   .model_post_init = NULL,
   .validators_before = list(),
-  .validators_after = list()
+  .validators_after = list(),
+  .strict_args_order = FALSE
 )
 }
 \arguments{
@@ -31,6 +32,10 @@ that are executed before the type checks.}
 
 \item{.validators_after}{A named list of field validators
 that are executed after the type checks.}
+
+\item{.strict_args_order}{If set to \code{TRUE}, the \code{.x} parameter
+of the returned model factory function will be the last function argument.
+This is useful if you want to pass the arguments unnamed.}
 }
 \value{
 A model factory function.

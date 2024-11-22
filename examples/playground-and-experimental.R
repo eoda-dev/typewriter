@@ -22,3 +22,20 @@ my_model2 <- base_model(
 )
 
 my_model2(txt = "allow NA only", b = NULL)
+
+# ---
+df <- data.frame(
+  id = 1:3,
+  value = c(11L, NA, 14L)
+)
+
+my_model_df <- base_model(
+  id = is_integer,
+  value = is_integer,
+  .strict_args_order = TRUE
+)
+
+my_model_df(.x = df)
+my_model_df(df)
+
+is_integer(all(df$value))
