@@ -147,7 +147,8 @@ model_validate(jsonlite::fromJSON(json_str), json_model)
 
 json_str <- '{"a": 10, "b": 20.5, "l": [1, 2, 3]}'
 
-try(model_validate(jsonlite::fromJSON(json_str), json_model))
+# try(model_validate(jsonlite::fromJSON(json_str), json_model))
+try(json_model(jsonlite::fromJSON(json_str)))
 ```
   
 ## To JSON
