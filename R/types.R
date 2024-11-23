@@ -55,3 +55,36 @@ dtype_integer <- function(n = NULL) {
   }
   structure(fn, dtype = "integer", n = n)
 }
+
+# ---
+# Examples:
+#   str = "integer"
+#   str = "integer:1"
+type_check_fn_from_str <- function(str) {
+  values <- unlist(strsplit(str, ":"))
+  dtype <- values[1]
+  # fn_str <- glue::glue('function(x) typeof(x) == "{dtype}"')
+  # if (length(values) == 2) {
+  #   fn_str = paste(fn_str, "& length(x) ==", values[2])
+  # }
+
+  # eval(parse(text = fn_str))
+  fn_args <- alist(x = )
+  body <- substitute(
+    {
+      typeof(x) == dtype
+    },
+    list(dtype = dtype)
+  )
+  if (length(values) == 2) {
+    n <- as.integer(values[2])
+    body <- substitute(
+      {
+        typeof(x) == dtype & length(x) == n
+      },
+      list(dtype = dtype, n = n)
+    )
+  }
+
+  rlang::new_function(fn_args, body)
+}

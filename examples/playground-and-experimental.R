@@ -39,3 +39,16 @@ my_model_df(.x = df)
 my_model_df(df)
 
 is_integer(all(df$value))
+
+# ---
+my_model_simple <- base_model(
+  a = "integer",
+  txt = "character:2"
+)
+
+my_model_simple(a = 10L, txt = c("Hi", "there"))
+
+f_test <- function(a = "integer:1", b = "integer") {
+  check_args()
+  a + b
+}

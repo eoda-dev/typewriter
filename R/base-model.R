@@ -71,6 +71,10 @@ base_model <- function(fields = list(), ...,
   # })
 
   fields <- Map(function(.x) {
+    if (is.character(.x)) {
+      return(model_field(fn = type_check_fn_from_str(.x)))
+    }
+
     if (inherits(.x, c("function", "formula"))) {
       return(model_field(fn = .x))
     }
