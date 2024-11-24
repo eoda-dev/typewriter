@@ -102,3 +102,8 @@ Optional <- function(type_check_fn) {
 
   structure(function(x) type_check_fn(x) | rlang::is_na(x), base_func = type_check_fn)
 }
+
+# ---
+dtype <- function(type_check_fn, default = NA) {
+  model_field(type_check_fn, default)
+}

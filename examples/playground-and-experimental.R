@@ -57,7 +57,27 @@ f_test <- function(a = "integer:1", b = "integer") {
 
 my_mod_opt <- base_model(
   a = Optional(is.integer),
-  b = is.integer
+  b = "integer",
+  txt = model_field("character:1", "hello")
 )
 
-my_mod_opt(a = 2, b = 2L)
+my_mod_opt(a = 2L, b = 2L, txt = 10)
+
+mtcars_model <- base_model(
+  mpg = "double:32",
+  cyl = "double:32"
+)
+
+mtcars_model(mtcars)
+
+# --- dtype
+mm <- base_model(
+  a = dtype("integer", 10L)
+)
+
+mm()
+
+f_x <- function(a = dtype("integer", 20L)) {
+  check_args()
+  a + 1
+}
