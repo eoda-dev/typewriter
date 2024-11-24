@@ -18,18 +18,18 @@
 is_any <- function(x) TRUE
 
 # ---
-#' Mark a parameter as optional
-#' @param fn Type check function
-#' @param allow_null Whether `NA` and `NULL` are allowed for an optional parameter
-#' @example examples/api/type-is-optional.R
-#' @returns type check function
-#' @export
-is_optional <- function(fn, allow_null = FALSE) {
-  fn_name <- deparse(substitute(fn))
-  check_optional <- ifelse(allow_null, "rlang::is_na(x) | is.null(x)", "rlang::is_na(x)")
-  # eval(parse(text = paste0("function(x) ", fn_name, "(x) | rlang::is_na(x)")))
-  eval(parse(text = paste0("function(x) ", fn_name, "(x) | ", check_optional)))
-}
+# Mark a parameter as optional
+# @param fn Type check function
+# @param allow_null Whether `NA` and `NULL` are allowed for an optional parameter
+# @example examples/api/type-is-optional.R
+# @returns type check function
+# @export
+#is_optional <- function(fn, allow_null = FALSE) {
+#  fn_name <- deparse(substitute(fn))
+#  check_optional <- ifelse(allow_null, "rlang::is_na(x) | is.null(x)", "rlang::is_na(x)")
+#  # eval(parse(text = paste0("function(x) ", fn_name, "(x) | rlang::is_na(x)")))
+#  eval(parse(text = paste0("function(x) ", fn_name, "(x) | ", check_optional)))
+#}
 
 # ---
 # DEPRECATED
@@ -87,4 +87,18 @@ type_check_fn_from_str <- function(str) {
   }
 
   rlang::new_function(fn_args, body)
+}
+
+# ---
+#' Mark a parameter as optional
+#' @param type_check_fn Type check function or type as character like `integer` or `integer:1`.
+#' @example examples/api/type-is-optional.R
+#' @returns type check function
+#' @export
+Optional <- function(type_check_fn) {
+  if (is.character(type_check_fn)) {
+    type_check_fn <- type_check_fn_from_str(type_check_fn)
+  }
+
+  structure(function(x) type_check_fn(x) | rlang::is_na(x), base_func = type_check_fn)
 }

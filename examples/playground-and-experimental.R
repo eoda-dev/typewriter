@@ -52,3 +52,12 @@ f_test <- function(a = "integer:1", b = "integer") {
   check_args()
   a + b
 }
+
+# --- Optional
+
+my_mod_opt <- base_model(
+  a = Optional(is.integer),
+  b = is.integer
+)
+
+my_mod_opt(a = 2, b = 2L)
