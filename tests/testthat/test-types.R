@@ -28,3 +28,14 @@ test_that("fn from str", {
   expect_true(fn(value))
   expect_false(fn_scalar(value))
 })
+
+# ---
+test_that("fn from str in base model", {
+  my_model <- base_model(
+    a = "integer"
+  )
+
+  res <- my_model(a = 10L)
+
+  expect_equal(res$a, 10L)
+})

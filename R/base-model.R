@@ -71,20 +71,27 @@ base_model <- function(fields = list(), ...,
   # })
 
   fields <- Map(function(.x) {
-    if (is.character(.x)) {
-      return(model_field(fn = type_check_fn_from_str(.x)))
-    }
-
-    if (inherits(.x, c("function", "formula"))) {
-      return(model_field(fn = .x))
-    }
-
     if (inherits(.x, CLASS_RDANTIC_MODEL)) {
       model_fn <- .x
       fn <- function(x) {
         is.list(model_validate(x, model_fn))
       }
       return(model_field(fn = fn))
+    }
+
+    #if (is.character(.x)) {
+    #  return(model_field(fn = type_check_fn_from_str(.x)))
+    #}
+
+    #if (inherits(.x, c("function", "formula"))) {
+    #  return(model_field(fn = .x))
+    #}
+    if (!inherits(.x, CLASS_RDANTIC_MODEL_FIELD)) {
+      .x <- model_field(fn = .x)
+    }
+
+    if (is.character(.x$fn)) {
+      .x$fn <- type_check_fn_from_str(.x$fn)
     }
 
     return(.x)
