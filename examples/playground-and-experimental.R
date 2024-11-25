@@ -90,3 +90,6 @@ f_x <- function(a = dtype("integer", 20L)) {
 f_x()
 
 # ---
+if (FALSE) {
+  print("Hi")
+}

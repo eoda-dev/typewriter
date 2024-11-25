@@ -56,7 +56,8 @@ my_model <- base_model(
 my_model(a = 1L, b = 2L, txt = "My awesome model")
 
 # Fails
-try(my_model(a = 1, b = 2L, txt = "My awesome model"))
+if (FALSE)
+  try(my_model(a = 1, b = 2L, txt = "My awesome model"))
 
 # ---
 # Functions
@@ -69,7 +70,8 @@ f <- function(a, b) {
 f(4L, 5L)
 
 # Fails
-try(f(4, 5))
+if (FALSE)
+  try(f(4, 5))
 
 # ---
 # Data frames
@@ -95,5 +97,6 @@ df_model(.x = df)
 
 # Fails
 df$id <- NULL
-try(df_model(.x = df))
+if (FALSE)
+  try(df_model(.x = df))
 }
