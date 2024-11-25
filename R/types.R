@@ -93,8 +93,13 @@ Optional <- function(type_check_fn) {
 }
 
 # ---
-dtype <- function(type_check_fn, default = NA) {
-  model_field(type_check_fn, default)
+#' Create a type check function (validator)
+#' @param type_check description
+#' @param default A default value.
+#' @returns A type check function (validator)
+#' @export
+dtype <- function(type_check, default = NA) {
+  model_field(as_type_check_func(type_check), default)
 }
 
 # ---

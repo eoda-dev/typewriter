@@ -65,19 +65,26 @@ my_mod_opt(a = 2L, b = 2L, txt = 10)
 
 mtcars_model <- base_model(
   mpg = "double:32",
-  cyl = "double:32"
+  cyl = "integer:32",
+  gear = "integer:32",
+  .validators_before = list(
+    cyl = as.integer,
+    gear = as.integer
+  )
 )
 
 mtcars_model(mtcars)
 
 # --- dtype
 mm <- base_model(
-  a = dtype("integer", 10L)
+  a = dtype("optional:integer", 10L)
 )
 
-mm()
+mm(a = NA)
 
 f_x <- function(a = dtype("integer", 20L)) {
   check_args()
   a + 1
 }
+
+f_x()
