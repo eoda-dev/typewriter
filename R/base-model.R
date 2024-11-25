@@ -79,13 +79,13 @@ base_model <- function(fields = list(), ...,
       return(model_field(fn = fn))
     }
 
-    #if (is.character(.x)) {
+    # if (is.character(.x)) {
     #  return(model_field(fn = type_check_fn_from_str(.x)))
-    #}
+    # }
 
-    #if (inherits(.x, c("function", "formula"))) {
+    # if (inherits(.x, c("function", "formula"))) {
     #  return(model_field(fn = .x))
-    #}
+    # }
     if (!inherits(.x, CLASS_RDANTIC_MODEL_FIELD)) {
       .x <- model_field(fn = .x)
     }

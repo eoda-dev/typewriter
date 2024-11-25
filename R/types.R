@@ -24,12 +24,12 @@ is_any <- function(x) TRUE
 # @example examples/api/type-is-optional.R
 # @returns type check function
 # @export
-#is_optional <- function(fn, allow_null = FALSE) {
+# is_optional <- function(fn, allow_null = FALSE) {
 #  fn_name <- deparse(substitute(fn))
 #  check_optional <- ifelse(allow_null, "rlang::is_na(x) | is.null(x)", "rlang::is_na(x)")
 #  # eval(parse(text = paste0("function(x) ", fn_name, "(x) | rlang::is_na(x)")))
 #  eval(parse(text = paste0("function(x) ", fn_name, "(x) | ", check_optional)))
-#}
+# }
 
 # ---
 # DEPRECATED
@@ -61,6 +61,12 @@ dtype_integer <- function(n = NULL) {
 #   str = "integer"
 #   str = "integer:1"
 type_check_fn_from_str <- function(str) {
+  optional <- FALSE
+  if (startsWith(str, "optional:")) {
+    optional <- TRUE
+    str <- sub("optional:", "", str)
+  }
+
   values <- unlist(strsplit(str, ":"))
   dtype <- values[1]
   # fn_str <- glue::glue('function(x) typeof(x) == "{dtype}"')
@@ -86,7 +92,12 @@ type_check_fn_from_str <- function(str) {
     )
   }
 
-  rlang::new_function(fn_args, body)
+  fn <- rlang::new_function(fn_args, body)
+  if (optional) {
+    return(Optional(fn))
+  }
+
+  fn
 }
 
 # ---
@@ -106,4 +117,9 @@ Optional <- function(type_check_fn) {
 # ---
 dtype <- function(type_check_fn, default = NA) {
   model_field(type_check_fn, default)
+}
+
+# ---
+as_type_check_func <- function(x) {
+
 }
