@@ -34,30 +34,14 @@ devtools::install_github("eoda-dev/rdantic")
 
 ```{r example}
 library(rdantic)
-library(rlang)
-
-# Models
-my_model <- base_model(
-  a = is_integer,
-  b = is_integer
-)
-
-(m <- my_model(a = 2L, b = 4L))
-
-try(m$a <- 10.5)
-
-try(my_model(a = 2L, b = 4.5))
 
 # Functions
-f <- function(a, b = 5L) {
-  check_args(
-    a = is_integer,
-    b = is_scalar_integer
-  )
+f <- function(a = "integer", b = "integer:1") {
+  check_args()
   a + b
 }
 
-f(5L)
+f(5L, 3L)
 try(f(5L, c(3L, 4L)))
 
 # Data frames
@@ -67,12 +51,24 @@ df <- data.frame(
 )
 
 my_model <- base_model(
-  id = is_integer,
-  letter = is_character
+  id = "integer",
+  letter = "character"
 )
 
 model_validate(df, my_model)
 
 df$id <- as.double(df$id)
 try(model_validate(df, my_model))
+
+# Models
+my_model <- base_model(
+  a = "integer",
+  b = "integer"
+)
+
+(m <- my_model(a = 2L, b = 4L))
+
+try(m$a <- 10.5)
+
+try(my_model(a = 2L, b = 4.5))
 ```

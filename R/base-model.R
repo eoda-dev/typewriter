@@ -206,15 +206,15 @@ check_args <- function(...) {
     fields <- Map(eval, as.list(fmls))
   }
 
-  e <- rlang::caller_env()
-  for (name in names(e)) {
-    value <- e[[name]]
+  func_env <- rlang::caller_env()
+  for (name in names(func_env)) {
+    value <- func_env[[name]]
     if (inherits(value, CLASS_RDANTIC_MODEL_FIELD)) {
-      e[[name]] <- value$default
+      func_env[[name]] <- value$default
     }
   }
 
-  base_model(fields)(.x = e)
+  base_model(fields)(.x = func_env)
 }
 
 # ---
