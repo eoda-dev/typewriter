@@ -17,10 +17,10 @@
 #' @export
 is_any <- function(x) TRUE
 
-#' Type predicate `rdantic model`
+#' Type predicate `typewriter model`
 #' @param model_fn A model factory function created with [base_model()].
 #' @export
-is_rdantic_model <- function(model_fn) {
+is_typewriter_model <- function(model_fn) {
   function(x) {
     is.list(model_validate(x, model_fn))
   }

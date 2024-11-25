@@ -1,12 +1,12 @@
 ---
-title: "rdantic"
+title: "typewriter"
 output: rmarkdown::html_vignette
 vignette: >
-%\VignetteIndexEntry{rdantic}
+  %\VignetteIndexEntry{typewriter}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-  ---
-  
+---
+
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(rdantic)
+library(typewriter)
 library(rlang)
 ```
 
@@ -67,7 +67,7 @@ address_model <- base_model(
 person_model <- base_model(
   name = is_scalar_character,
   age = is_scalar_integer,
-  address = is_rdantic_model(address_model)
+  address = is_typewriter_model(address_model)
 )
 
 person_model(
@@ -106,7 +106,7 @@ data_model <- base_model(
 
 api_model <- base_model(
   status_code = is_scalar_integer,
-  data = is_rdantic_model(data_model)
+  data = is_typewriter_model(data_model)
 )
 
 model_validate(names_to_snake_case(external_data), api_model)
