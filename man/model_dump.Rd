@@ -13,7 +13,7 @@ model_dump(
 )
 }
 \arguments{
-\item{obj}{An rdantic model object}
+\item{obj}{A typewriter model object}
 
 \item{by_alias}{Use aliases for names.}
 

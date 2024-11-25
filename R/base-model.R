@@ -233,7 +233,7 @@ model_validate <- function(obj, model_fn) {
 
 # ---
 #' @export
-print.rdantic <- function(x, ...) {
+print.typewriter <- function(x, ...) {
   print(x[seq_along(x)])
   return(invisible(x))
 }
@@ -250,7 +250,7 @@ check_assignment <- function(x, name, value) {
 
 # ---
 #' @export
-`$<-.rdantic` <- function(x, name, value) {
+`$<-.typewriter` <- function(x, name, value) {
   if (isFALSE(name %in% names(x))) {
     return(x)
   }
@@ -261,7 +261,7 @@ check_assignment <- function(x, name, value) {
 
 # ---
 #' @export
-`[[<-.rdantic` <- function(x, name, value) {
+`[[<-.typewriter` <- function(x, name, value) {
   if (isFALSE(name %in% names(x))) {
     return(x)
   }
@@ -278,7 +278,7 @@ check_assignment <- function(x, name, value) {
 
 # ---
 #' Convert model to base list
-#' @param obj An rdantic model object
+#' @param obj A typewriter model object
 #' @param by_alias Use aliases for names.
 #' @param exclude_na Whether to exclude `NA` values.
 #' @param exclude_null Whether to exclude `NULL` values.
