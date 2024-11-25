@@ -4,7 +4,7 @@
 \alias{model_field}
 \title{Create a model field}
 \usage{
-model_field(fn, default = NA, alias = NULL, ...)
+model_field(fn, default = NA, alias = NULL, error_msg = NULL, ...)
 }
 \arguments{
 \item{fn}{A type check function.}
@@ -13,7 +13,10 @@ model_field(fn, default = NA, alias = NULL, ...)
 
 \item{alias}{alias that can be used in \code{\link[=model_dump]{model_dump()}}}
 
-\item{...}{\strong{not used} at the moment}
+\item{error_msg, }{... \strong{not used} at the moment}
+}
+\value{
+A model field.
 }
 \description{
 Create a model field
