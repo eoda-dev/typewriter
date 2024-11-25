@@ -133,8 +133,8 @@ base_model <- function(fields = list(), ...,
         errors[[name]] <- list(
           name = name,
           value = obj_value,
-          type = typeof(obj_value),
-          len = length(obj_value),
+          # type = typeof(obj_value),
+          # len = length(obj_value),
           type_check_fn = type_check_fn
         )
       }
