@@ -4,12 +4,22 @@
 \alias{model_dump}
 \title{Convert model to base list}
 \usage{
-model_dump(obj, by_alias = FALSE, ...)
+model_dump(
+  obj,
+  by_alias = FALSE,
+  exclude_null = FALSE,
+  exclude_na = FALSE,
+  ...
+)
 }
 \arguments{
 \item{obj}{An rdantic model object}
 
 \item{by_alias}{Use aliases for names.}
+
+\item{exclude_null}{Whether to exclude \code{NULL} values.}
+
+\item{exclude_na}{Whether to exclude \code{NA} values.}
 
 \item{...}{\strong{not used} at the moment.}
 }

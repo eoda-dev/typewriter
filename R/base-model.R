@@ -275,15 +275,31 @@ check_assignment <- function(x, name, value) {
 #' Convert model to base list
 #' @param obj An rdantic model object
 #' @param by_alias Use aliases for names.
+#' @param exclude_na Whether to exclude `NA` values.
+#' @param exclude_null Whether to exclude `NULL` values.
 #' @param ... **not used** at the moment.
 #' @returns base list object
 #' @export
-model_dump <- function(obj, by_alias = FALSE, ...) {
+model_dump <- function(obj,
+                       by_alias = FALSE,
+                       exclude_null = FALSE,
+                       exclude_na = FALSE,
+                       ...) {
   if (isTRUE(by_alias)) {
-    return(dump_by_alias(obj))
+    # return(dump_by_alias(obj))
+    obj <- dump_by_alias(obj)
   }
 
-  return(model_to_list(obj))
+  if (exclude_na) {
+    obj <- discard_this(obj, rlang::is_na)
+  }
+
+  if (exclude_null) {
+    obj <- discard_this(obj, is.null)
+  }
+
+  return(unclass(obj))
+  # return(model_to_list(obj)) # dumps NULLs!
 }
 
 # ---
