@@ -13,7 +13,7 @@ model_field(fn, default = NA, alias = NULL, error_msg = NULL, ...)
 
 \item{alias}{alias that can be used in \code{\link[=model_dump]{model_dump()}}}
 
-\item{error_msg, }{... \strong{not used} at the moment}
+\item{error_msg, ...}{\strong{not used} at the moment}
 }
 \value{
 A model field.

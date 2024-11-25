@@ -8,7 +8,7 @@ model_fields <- function(model_fn) {
 #' @param fn A type check function.
 #' @param default A default value for the field.
 #' @param alias alias that can be used in [model_dump()]
-#' @param error_msg, ... **not used** at the moment
+#' @param error_msg,... **not used** at the moment
 #' @returns A model field.
 #' @export
 model_field <- function(fn, default = NA, alias = NULL, error_msg = NULL, ...) {
