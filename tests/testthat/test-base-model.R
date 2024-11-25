@@ -115,7 +115,7 @@ test_that("model field", {
   # Assert
   expect_equal(res$a, 5L)
   expect_equal(res$b, 10L)
-  expect_s3_class(res, CLASS_RDANTIC)
+  expect_s3_class(res, CLASS_MODEL)
 })
 
 # ---

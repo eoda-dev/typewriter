@@ -98,7 +98,7 @@ dump_by_alias <- function(obj, fields = NULL) {
     alias <- fields[[name]]$alias
     value <- obj[[name]]
     new_name <- ifelse(is.null(alias), name, alias)
-    if (inherits(value, CLASS_RDANTIC)) {
+    if (inherits(value, CLASS_MODEL)) {
       l[[new_name]] <- dump_by_alias(value)
     } else {
       l[[new_name]] <- value

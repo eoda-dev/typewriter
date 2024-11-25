@@ -174,7 +174,7 @@ base_model <- function(fields = list(), ...,
       return(obj)
     }
 
-    return(structure(obj, fields = fields, class = c(class(obj), CLASS_RDANTIC)))
+    return(structure(obj, fields = fields, class = c(class(obj), CLASS_MODEL)))
   }))
 
   return(
