@@ -1,29 +1,29 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# rdantic
+# typewriter
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/eoda-dev/rdantic/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/eoda-dev/rdantic/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/eoda-dev/typewriter/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/eoda-dev/typewriter/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of rdantic is to add type safety to your R code.
+The goal of typewriter is to add type safety to your R code.
 
 ## Installation
 
-You can install the development version of rdantic from
+You can install the development version of typewriter from
 [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("eoda-dev/rdantic")
+devtools::install_github("eoda-dev/typewriter")
 ```
 
 ## Examples
 
 ``` r
-library(rdantic)
+library(typewriter)
 
 # Functions
 f <- function(a = "integer", b = "integer:1") {
