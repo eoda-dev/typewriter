@@ -17,28 +17,6 @@
 #' @export
 is_any <- function(x) TRUE
 
-# ---
-# Mark a parameter as optional
-# @param fn Type check function
-# @param allow_null Whether `NA` and `NULL` are allowed for an optional parameter
-# @example examples/api/type-is-optional.R
-# @returns type check function
-# @export
-# is_optional <- function(fn, allow_null = FALSE) {
-#  fn_name <- deparse(substitute(fn))
-#  check_optional <- ifelse(allow_null, "rlang::is_na(x) | is.null(x)", "rlang::is_na(x)")
-#  # eval(parse(text = paste0("function(x) ", fn_name, "(x) | rlang::is_na(x)")))
-#  eval(parse(text = paste0("function(x) ", fn_name, "(x) | ", check_optional)))
-# }
-
-# ---
-# DEPRECATED
-optional_field <- function(type_check_fn) {
-  function(x) {
-    type_check_fn(x) | is.null(x) | rlang::is_na(x)
-  }
-}
-
 #' Type predicate `rdantic model`
 #' @param model_fn A model factory function created with [base_model()].
 #' @export
@@ -107,10 +85,10 @@ type_check_fn_from_str <- function(str) {
 #' @returns type check function
 #' @export
 Optional <- function(type_check_fn) {
-  if (is.character(type_check_fn)) {
-    type_check_fn <- type_check_fn_from_str(type_check_fn)
-  }
-
+  #if (is.character(type_check_fn)) {
+  #  type_check_fn <- type_check_fn_from_str(type_check_fn)
+  #}
+  type_check_fn <- as_type_check_func(type_check_fn)
   structure(function(x) type_check_fn(x) | rlang::is_na(x), base_func = type_check_fn)
 }
 
@@ -120,6 +98,10 @@ dtype <- function(type_check_fn, default = NA) {
 }
 
 # ---
-as_type_check_func <- function(x) {
+as_type_check_func <- function(type_check_fn) {
+  if (is.character(type_check_fn)) {
+    type_check_fn <- type_check_fn_from_str(type_check_fn)
+  }
 
+  rlang::as_function(type_check_fn)
 }
