@@ -85,9 +85,9 @@ type_check_fn_from_str <- function(str) {
 #' @returns type check function
 #' @export
 Optional <- function(type_check_fn) {
-  #if (is.character(type_check_fn)) {
+  # if (is.character(type_check_fn)) {
   #  type_check_fn <- type_check_fn_from_str(type_check_fn)
-  #}
+  # }
   type_check_fn <- as_type_check_func(type_check_fn)
   structure(function(x) type_check_fn(x) | rlang::is_na(x), base_func = type_check_fn)
 }
