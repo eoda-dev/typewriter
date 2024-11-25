@@ -126,16 +126,16 @@ base_model <- function(fields = list(), ...,
     }
 
     for (name in names(fields)) {
-      check_type_fn <- rlang::as_function(fields[[name]]$fn)
+      type_check_fn <- rlang::as_function(fields[[name]]$fn)
       obj_value <- obj[[name]]
 
-      if (!isTRUE(all(check_type_fn(obj_value)))) {
+      if (!isTRUE(all(type_check_fn(obj_value)))) {
         errors[[name]] <- list(
           name = name,
           value = obj_value,
           type = typeof(obj_value),
           len = length(obj_value),
-          type_check_fn = check_type_fn
+          type_check_fn = type_check_fn
         )
       }
     }
