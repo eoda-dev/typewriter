@@ -135,7 +135,7 @@ base_model <- function(fields = list(), ...,
           value = obj_value,
           type = typeof(obj_value),
           len = length(obj_value),
-          type_check_failed = check_type_fn
+          type_check_fn = check_type_fn
         )
       }
     }

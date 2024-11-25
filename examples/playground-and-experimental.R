@@ -80,7 +80,7 @@ mm <- base_model(
   a = dtype("optional:integer", 10L)
 )
 
-mm(a = NA)
+mm(a = mtcars)
 
 f_x <- function(a = dtype("integer", 20L)) {
   check_args()
