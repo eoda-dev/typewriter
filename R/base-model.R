@@ -12,8 +12,11 @@ model_fields <- function(model_fn) {
 #' @returns A model field.
 #' @export
 model_field <- function(fn, default = NA, alias = NULL, error_msg = NULL, ...) {
-  l <- as.list(environment())
-  return(structure(c(l, list(...)), class = CLASS_RDANTIC_MODEL_FIELD))
+  # l <- as.list(environment())
+  # return(structure(c(l, list(...)), class = CLASS_RDANTIC_MODEL_FIELD))
+  obj <- c(as.list(environment()), list(...))
+  base_class <- class(obj)
+  structure(obj, class = c(base_class, CLASS_RDANTIC_MODEL_FIELD))
 }
 
 # ---
@@ -26,7 +29,9 @@ model_field <- function(fn, default = NA, alias = NULL, error_msg = NULL, ...) {
 #' @export
 model_config <- function(allow_extra = FALSE,
                          str_to_lower = FALSE, ...) {
-  return(structure(c(as.list(environment()), list(...)), class = CLASS_MODEL_CONFIG))
+  obj <- c(as.list(environment()), list(...))
+  base_class <- class(obj)
+  return(structure(obj, class = c(base_class, CLASS_MODEL_CONFIG)))
 }
 
 # ---
