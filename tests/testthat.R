@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(rdantic)
+library(typewriter)
 
-test_check("rdantic")
+test_check("typewriter")
