@@ -13,10 +13,10 @@ model_fields <- function(model_fn) {
 #' @export
 model_field <- function(fn, default = NA, alias = NULL, error_msg = NULL, ...) {
   # l <- as.list(environment())
-  # return(structure(c(l, list(...)), class = CLASS_RDANTIC_MODEL_FIELD))
+  # return(structure(c(l, list(...)), class = CLASS_MODEL_FIELD))
   obj <- c(as.list(environment()), list(...))
   base_class <- class(obj)
-  structure(obj, class = c(base_class, CLASS_RDANTIC_MODEL_FIELD))
+  structure(obj, class = c(base_class, CLASS_MODEL_FIELD))
 }
 
 # ---
@@ -92,7 +92,7 @@ base_model <- function(fields = list(), ...,
     # if (inherits(.x, c("function", "formula"))) {
     #  return(model_field(fn = .x))
     # }
-    if (!inherits(.x, CLASS_RDANTIC_MODEL_FIELD)) {
+    if (!inherits(.x, CLASS_MODEL_FIELD)) {
       .x <- model_field(fn = .x)
     }
 
@@ -214,7 +214,7 @@ check_args <- function(...) {
   func_env <- rlang::caller_env()
   for (name in names(func_env)) {
     value <- func_env[[name]]
-    if (inherits(value, CLASS_RDANTIC_MODEL_FIELD)) {
+    if (inherits(value, CLASS_MODEL_FIELD)) {
       func_env[[name]] <- value$default
     }
   }
