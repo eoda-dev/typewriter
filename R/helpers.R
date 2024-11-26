@@ -13,19 +13,26 @@ str_to_lower <- function(x) {
 }
 
 # ---
+numeric_to_integer <- function(x) {
+  ifelse(is.numeric(x), as.integer(x), x)
+}
+
+# ---
 is_not_null <- function(x) {
   isFALSE(is.null(x))
 }
 
 # ---
 to_raw_list <- function(x) {
-  purrr::keep_at(x, seq_along(x))
+  # purrr::keep_at(x, seq_along(x))
+  x[seq_along(x)]
 }
 
 # ---
 map_items <- function(x, fn) {
-  purrr::map2(names(x), x, fn) |>
-    rlang::set_names(names(x))
+  rlang::set_names(Map(fn, names(x), x), names(x))
+  # purrr::map2(names(x), x, fn) |>
+  #   rlang::set_names(names(x))
 }
 
 # ---
@@ -37,7 +44,7 @@ discard_this <- function(x, fn = rlang::is_na) {
     }
   }
 
-  return(purrr::discard(x, fn))
+  return(x[!unlist(Map(fn, x))])
 }
 
 # ---
@@ -91,17 +98,55 @@ dump_by_alias <- function(obj, fields = NULL) {
     fields <- model_fields(obj)
   }
 
-  l = list()
+  l <- list()
   for (name in names(obj)) {
     alias <- fields[[name]]$alias
     value <- obj[[name]]
     new_name <- ifelse(is.null(alias), name, alias)
-    if (inherits(value, CLASS_RDANTIC)) {
-      l[[new_name]] <- by_alias(value)
+    if (inherits(value, CLASS_MODEL)) {
+      l[[new_name]] <- dump_by_alias(value)
     } else {
       l[[new_name]] <- value
     }
   }
 
   return(l)
+}
+
+# ---
+model_to_list <- function(obj) {
+  l <- list()
+  for (name in names(obj)) {
+    value <- obj[[name]]
+    if (is.list(value)) {
+      l[[name]] <- model_to_list(value)
+    } else {
+      l[[name]] <- unclass(value)
+    }
+  }
+  return(l)
+}
+
+
+# ---
+map_depth_base <- function(.x, .depth, .f) {
+  if (!is.list(.x)) {
+    stop(".x must be a list.")
+  }
+
+  if (.depth == 0) {
+    # At depth 0, apply the function to the entire list
+    return(.f(.x))
+  } else if (.depth == 1) {
+    return(lapply(.x, .f))
+  } else {
+    # Recurse deeper into the list
+    return(lapply(.x, function(element) {
+      if (is.list(element)) {
+        map_depth_base(element, .depth - 1, .f)
+      } else {
+        .f(element) # Keep non-list elements unchanged
+      }
+    }))
+  }
 }

@@ -13,51 +13,35 @@ knitr::opts_chunk$set(
 )
 ```
 
-# rdantic
+# typewriter
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/eoda-dev/rdantic/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/eoda-dev/rdantic/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/eoda-dev/typewriter/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/eoda-dev/typewriter/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of rdantic is to add type safety to your R code.
+The goal of typewriter is to add type safety to your R code.
 
 ## Installation
 
-You can install the development version of rdantic from [GitHub](https://github.com/) with:
+You can install the development version of typewriter from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("eoda-dev/rdantic")
+devtools::install_github("eoda-dev/typewriter")
 ```
 
 ## Examples
 
 ```{r example}
-library(rdantic)
-library(rlang)
-
-# Models
-my_model <- base_model(
-  a = is_integer,
-  b = is_integer
-)
-
-(m <- my_model(a = 2L, b = 4L))
-
-try(m$a <- 10.5)
-
-try(my_model(a = 2L, b = 4.5))
+library(typewriter)
 
 # Functions
-f <- function(a, b = 5L) {
-  check_args(
-    a = is_integer,
-    b = is_scalar_integer
-  )
+f <- function(a = "integer", b = "integer:1") {
+  check_args()
   a + b
 }
 
-f(5L)
+f(5L, 3L)
 try(f(5L, c(3L, 4L)))
 
 # Data frames
@@ -67,12 +51,24 @@ df <- data.frame(
 )
 
 my_model <- base_model(
-  id = is_integer,
-  letter = is_character
+  id = "integer",
+  letter = "character"
 )
 
-df |> model_validate(my_model)
+model_validate(df, my_model)
 
 df$id <- as.double(df$id)
-try(df |> model_validate(my_model))
+try(model_validate(df, my_model))
+
+# Models
+my_model <- base_model(
+  a = "integer",
+  b = "integer"
+)
+
+(m <- my_model(a = 2L, b = 4L))
+
+try(m$a <- 10.5)
+
+try(my_model(a = 2L, b = 4.5))
 ```

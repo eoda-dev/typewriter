@@ -7,23 +7,32 @@ model_fields <- function(model_fn) {
 #' Create a model field
 #' @param fn A type check function.
 #' @param default A default value for the field.
-#' @param alias,... **not used** at the moment
+#' @param alias alias that can be used in [model_dump()]
+#' @param error_msg,... **not used** at the moment
+#' @returns A model field.
 #' @export
-model_field <- function(fn, default = NA, alias = NULL, ...) {
-  l <- as.list(environment())
-  return(structure(c(l, list(...)), class = CLASS_RDANTIC_MODEL_FIELD))
+model_field <- function(fn, default = NA, alias = NULL, error_msg = NULL, ...) {
+  # l <- as.list(environment())
+  # return(structure(c(l, list(...)), class = CLASS_MODEL_FIELD))
+  obj <- c(as.list(environment()), list(...))
+  base_class <- class(obj)
+  structure(obj, class = c(base_class, CLASS_MODEL_FIELD))
 }
 
 # ---
 #' Create a model config object
-#' @param allow_extra Whether to allow extra fields without type check.
+#' @param extra Whether to allow extra fields without type check.
 #' @param str_to_lower Convert all strings to lower case.
 #' @param ... **not used** at the moment
 #' @returns A model config object that can be used in [base_model()].
+#' @example examples/api/model-config.R
 #' @export
-model_config <- function(allow_extra = FALSE,
+model_config <- function(extra = c("ignore", "allow", "forbid"),
                          str_to_lower = FALSE, ...) {
-  return(structure(c(as.list(environment()), list(...)), class = CLASS_MODEL_CONFIG))
+  obj <- c(as.list(environment()), list(...))
+  obj$extra <- match.arg(extra)
+  base_class <- class(obj)
+  return(structure(obj, class = c(base_class, CLASS_MODEL_CONFIG)))
 }
 
 # ---
@@ -38,22 +47,23 @@ model_config <- function(allow_extra = FALSE,
 #'  that are executed before the type checks.
 #' @param .validators_after A named list of field validators
 #'  that are executed after the type checks.
+#' @param .strict_args_order If set to `TRUE`, the `.x` parameter
+#'  of the returned model factory function will be the last function argument.
+#'  This is useful if you want to pass the arguments unnamed.
 #' @returns A model factory function.
 #' @example examples/api/base-model.R
+#' @importFrom utils modifyList
 #' @export
 base_model <- function(fields = list(), ...,
                        .model_config = model_config(),
                        .model_pre_init = NULL,
                        .model_post_init = NULL,
                        .validators_before = list(),
-                       .validators_after = list()) {
-  fields <- utils::modifyList(fields, list(...), keep.null = TRUE)
-  fields <- purrr::map(fields, ~ {
-    if (inherits(.x, c("function", "formula"))) {
-      return(model_field(fn = .x))
-    }
-
-    if (inherits(.x, CLASS_RDANTIC_MODEL)) {
+                       .validators_after = list(),
+                       .strict_args_order = FALSE) {
+  fields <- modifyList(fields, list(...), keep.null = TRUE)
+  fields <- Map(function(.x) {
+    if (inherits(.x, CLASS_MODEL_FUNCTION)) {
       model_fn <- .x
       fn <- function(x) {
         is.list(model_validate(x, model_fn))
@@ -61,19 +71,34 @@ base_model <- function(fields = list(), ...,
       return(model_field(fn = fn))
     }
 
+    if (!inherits(.x, CLASS_MODEL_FIELD)) {
+      .x <- model_field(fn = .x)
+    }
+
+    if (is.character(.x$fn)) {
+      .x$fn <- type_check_fn_from_str(.x$fn)
+    }
+
     return(.x)
-  })
+  }, fields)
 
-  model_args <- purrr::map(fields, ~ .x$default)
+  # model_args <- purrr::map(fields, ~ .x$default)
+  model_args <- Map(function(x) x$default, fields)
+  fn_args <- c(alist(.x = NULL), model_args, alist(... = ))
+  if (.strict_args_order) {
+    fn_args <- c(model_args, alist(... = , .x = NULL))
+  }
 
+  # ---
   # Create model factory function
-  model_fn <- rlang::new_function(c(model_args, alist(... = , .x = NULL)), quote({
+  model_fn <- rlang::new_function(fn_args, quote({
     if (is_not_null(.x)) {
       obj <- .x
     } else {
       obj <- c(as.list(environment()), list(...))
     }
 
+    caller_fn_name <- as.character(match.call()[[1]])
     errors <- list()
 
     obj <- validate_fields(obj, .validators_before)
@@ -83,23 +108,23 @@ base_model <- function(fields = list(), ...,
     }
 
     for (name in names(fields)) {
-      check_type_fn <- rlang::as_function(fields[[name]]$fn)
+      type_check_fn <- rlang::as_function(fields[[name]]$fn)
       obj_value <- obj[[name]]
-      if (isFALSE(check_type_fn(obj_value))) {
+
+      if (!all(type_check_fn(obj_value))) {
         errors[[name]] <- list(
           name = name,
           value = obj_value,
-          type = typeof(obj_value),
-          len = length(obj_value),
-          type_check_failed = check_type_fn
+          type_check_fn = type_check_fn
         )
       }
     }
 
     obj <- validate_fields(obj, .validators_after)
 
-    if (isTRUE(.model_config$str_to_lower)) {
-      obj <- purrr::map_depth(obj, -1, str_to_lower)
+    if (.model_config$str_to_lower) {
+      # obj <- purrr::map_depth(obj, -1, str_to_lower)
+      obj <- map_depth_base(obj, -1, str_to_lower)
     }
 
     if (length(errors) > 0) {
@@ -111,8 +136,15 @@ base_model <- function(fields = list(), ...,
       return(invisible(obj))
     }
 
-    if (isFALSE(.model_config$allow_extra)) {
-      obj <- purrr::keep_at(obj, names(fields))
+    if (.model_config$extra == "ignore") {
+      obj <- obj[names(fields)]
+    }
+
+    if (.model_config$extra == "forbid") {
+      extra_fields <- !names(obj) %in% names(fields)
+      if (any(extra_fields)) {
+        stop("Forbidden field(s): ", paste(names(obj)[extra_fields], collapse = ", "))
+      }
     }
 
     if (is_not_null(.model_post_init)) {
@@ -123,14 +155,14 @@ base_model <- function(fields = list(), ...,
       return(obj)
     }
 
-    return(structure(obj, fields = fields, class = c(class(obj), CLASS_RDANTIC)))
+    return(structure(obj, fields = fields, class = c(class(obj), CLASS_MODEL, caller_fn_name)))
   }))
 
   return(
     structure(
       model_fn,
       fields = fields,
-      class = CLASS_RDANTIC_MODEL
+      class = CLASS_MODEL_FUNCTION
     )
   )
 }
@@ -157,18 +189,18 @@ check_args <- function(...) {
   if (length(fields) == 0) {
     fn <- rlang::caller_fn()
     fmls <- rlang::fn_fmls(fn)
-    fields <- purrr::map(as.list(fmls), eval)
+    fields <- Map(eval, as.list(fmls))
   }
 
-  e <- rlang::caller_env()
-  for (name in names(e)) {
-    value <- e[[name]]
-    if (inherits(value, CLASS_RDANTIC_MODEL_FIELD)) {
-      e[[name]] <- value$default
+  func_env <- rlang::caller_env()
+  for (name in names(func_env)) {
+    value <- func_env[[name]]
+    if (inherits(value, CLASS_MODEL_FIELD)) {
+      func_env[[name]] <- value$default
     }
   }
 
-  base_model(fields)(.x = e)
+  base_model(fields)(.x = func_env)
 }
 
 # ---
@@ -182,7 +214,7 @@ model_validate <- function(obj, model_fn) {
 
 # ---
 #' @export
-print.rdantic <- function(x, ...) {
+print.typewriter <- function(x, ...) {
   print(x[seq_along(x)])
   return(invisible(x))
 }
@@ -199,7 +231,7 @@ check_assignment <- function(x, name, value) {
 
 # ---
 #' @export
-`$<-.rdantic` <- function(x, name, value) {
+`$<-.typewriter` <- function(x, name, value) {
   if (isFALSE(name %in% names(x))) {
     return(x)
   }
@@ -210,7 +242,7 @@ check_assignment <- function(x, name, value) {
 
 # ---
 #' @export
-`[[<-.rdantic` <- function(x, name, value) {
+`[[<-.typewriter` <- function(x, name, value) {
   if (isFALSE(name %in% names(x))) {
     return(x)
   }
@@ -226,36 +258,34 @@ check_assignment <- function(x, name, value) {
 # }
 
 # ---
-# TODO: Deprecated?, use single functions as 'model_exclude_na'
+#' Convert model to base list
+#' @param obj A typewriter model object
+#' @param by_alias Use aliases for names.
+#' @param exclude_na Whether to exclude `NA` values.
+#' @param exclude_null Whether to exclude `NULL` values.
+#' @param ... **not used** at the moment.
+#' @returns base list object
+#' @export
 model_dump <- function(obj,
-                       exclude = NULL,
-                       include = NULL,
-                       exclude_na = FALSE,
+                       by_alias = FALSE,
                        exclude_null = FALSE,
-                       by_alias = FALSE) {
-  fields <- model_fields(obj)
-
-  if (is_not_null(exclude)) {
-    obj <- purrr::discard_at(obj, exclude)
+                       exclude_na = FALSE,
+                       ...) {
+  if (isTRUE(by_alias)) {
+    # return(dump_by_alias(obj))
+    obj <- dump_by_alias(obj)
   }
 
-  if (is_not_null(include)) {
-    obj <- purrr::keep_at(obj, include)
-  }
-
-  if (isTRUE(exclude_na)) {
+  if (exclude_na) {
     obj <- discard_this(obj, rlang::is_na)
   }
 
-  if (isTRUE(exclude_null)) {
-    obj <- discard_this(obj, rlang::is_null)
+  if (exclude_null) {
+    obj <- discard_this(obj, is.null)
   }
 
-  if (isTRUE(by_alias)) {
-    obj <- dump_by_alias(obj, fields)
-  }
-
-  return(obj)
+  return(unclass(obj))
+  # return(model_to_list(obj)) # dumps NULLs!
 }
 
 # ---

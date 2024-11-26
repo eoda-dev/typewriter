@@ -1,4 +1,4 @@
-CLASS_RDANTIC <- "rdantic"
-CLASS_RDANTIC_MODEL <- "rdantic_model"
-CLASS_RDANTIC_MODEL_FIELD <- "rdantic_model_field"
-CLASS_MODEL_CONFIG <- "rdantic_model_cfg"
+CLASS_MODEL <- "typewriter"
+CLASS_MODEL_FUNCTION <- "typewriter_model_factory"
+CLASS_MODEL_FIELD <- "typewriter_model_field"
+CLASS_MODEL_CONFIG <- "typewriter_model_cfg"

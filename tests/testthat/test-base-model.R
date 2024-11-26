@@ -110,14 +110,15 @@ test_that("model field", {
   )
 
   # Act
-  res <- my_model(5L)
+  res <- my_model(a = 5L)
 
   # Assert
   expect_equal(res$a, 5L)
   expect_equal(res$b, 10L)
-  expect_s3_class(res, CLASS_RDANTIC)
+  expect_s3_class(res, CLASS_MODEL)
 })
 
+# ---
 test_that("model pre init", {
   # Prepare
   df <- data.frame(
@@ -140,4 +141,51 @@ test_that("model pre init", {
   # Act
   res_def <- df_model(.x = df)
   expect_equal(names(res_def), c("id", "name", "surname", "full_name"))
+})
+
+# ---
+test_that("strict args order", {
+  # Prepare
+
+  # Act
+  my_model <- base_model(
+    a = is.integer,
+    b = is.integer,
+    .strict_args_order = TRUE
+  )
+  res <- model_to_list(my_model(4L, 2L))
+
+  # Assert
+  expect_equal(res, list(a = 4L, b = 2L))
+})
+
+# ---
+test_that("discard extra fields", {
+  # # Prepare
+  my_model <- base_model(
+    cyl = is.double,
+    mpg = is.double
+  )
+
+  # Act
+  res <- my_model(mtcars)
+
+  # Assert
+  expect_equal(ncol(res), 2)
+})
+
+# ---
+test_that("allow extra fields", {
+  # # Prepare
+  my_model <- base_model(
+    cyl = is.double,
+    mpg = is.double,
+    .model_config = model_config(extra = "allow")
+  )
+
+  # Act
+  res <- my_model(mtcars)
+
+  # Assert
+  expect_equal(ncol(res), 11)
 })

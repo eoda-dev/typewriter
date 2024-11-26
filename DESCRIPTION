@@ -1,4 +1,4 @@
-Package: rdantic
+Package: typewriter
 Type: Package
 Title: Type Safety for R
 Version: 0.1.0
@@ -10,18 +10,18 @@ Authors@R: c(
 Maintainer: Stefan Kuethe <crazycapivara@gmail.com>
 Description: Adds type safety to R.
 URL:
-  https://github.com/eoda-dev/rdantic
-  https://eoda-dev.github.io/rdantic/
-BugReports: https://github.com/eoda-dev/rdantic/issues
+  https://github.com/eoda-dev/typewriter
+  https://eoda-dev.github.io/typewriter/
+BugReports: https://github.com/eoda-dev/typewriter/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
     glue,
-    purrr,
     rlang
 RoxygenNote: 7.3.2
 Suggests:
+    jsonlite,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)

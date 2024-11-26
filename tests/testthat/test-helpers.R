@@ -32,7 +32,7 @@ test_that("camels to snakes", {
 })
 
 # ---
-test_that("discard recursive", {
+test_that("discard recursive NA", {
   # Prepare
   l <- list(
     a = 10,
@@ -45,6 +45,25 @@ test_that("discard recursive", {
 
   # Act
   res <- discard_this(l, rlang::is_na)
+
+  # Assert
+  expect_equal(res, list(a = 10, x = list(aa = 20)))
+})
+
+# ---
+test_that("discard recursive NULL", {
+  # Prepare
+  l <- list(
+    a = 10,
+    b = NULL,
+    x = list(
+      aa = 20,
+      bb = NULL
+    )
+  )
+
+  # Act
+  res <- discard_this(l, is.null)
 
   # Assert
   expect_equal(res, list(a = 10, x = list(aa = 20)))
