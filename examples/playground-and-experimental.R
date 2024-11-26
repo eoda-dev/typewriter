@@ -101,3 +101,11 @@ my_model <- base_model(
 )
 
 my_model(a = 10)
+
+# ---
+my_struct <- typed_struct(
+  a = is.integer,
+  b = Optional(is.character)
+)
+
+my_struct(a = 10L, txt = "Hi")

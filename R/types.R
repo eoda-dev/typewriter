@@ -79,20 +79,6 @@ type_check_fn_from_str <- function(str) {
 }
 
 # ---
-#' Mark a parameter as optional
-#' @param type_check_fn Type check function or type as character like `integer` or `integer:1`.
-#' @example examples/api/type-is-optional.R
-#' @returns type check function
-#' @export
-Optional <- function(type_check_fn) {
-  # if (is.character(type_check_fn)) {
-  #  type_check_fn <- type_check_fn_from_str(type_check_fn)
-  # }
-  type_check_fn <- as_type_check_func(type_check_fn)
-  structure(function(x) type_check_fn(x) | rlang::is_na(x), base_func = type_check_fn)
-}
-
-# ---
 #' Create a type check function (validator)
 #' @param type_check description
 #' @param default A default value.
@@ -109,6 +95,26 @@ as_type_check_func <- function(type_check_fn) {
   }
 
   rlang::as_function(type_check_fn)
+}
+
+# ---
+#' Mark a parameter as optional
+#' @param type_check_fn Type check function or type as
+#'  character like `integer` or `integer:1`.
+#' @example examples/api/type-is-optional.R
+#' @returns type check function
+#' @export
+Optional <- function(type_check_fn) {
+  if (inherits(type_check_fn, CLASS_MODEL_FIELD)) {
+    stop(CLASS_MODEL_FIELD, " objects are not supported.")
+  }
+
+  type_check_fn <- as_type_check_func(type_check_fn)
+  new_type_check_fn <- structure(
+    function(x) type_check_fn(x) | rlang::is_na(x),
+    base_func = type_check_fn
+  )
+  new_type_check_fn
 }
 
 # ---
@@ -131,4 +137,43 @@ Union <- function(...) {
     },
     base_func = fns
   )
+}
+
+# ---
+BaseType <- function(type_str, n = NULL, default = NA) {
+  body <- substitute(typeof(x) == dtype, list(dtype = type_str))
+
+  if (is_not_null(n)) {
+    body <- substitute(
+      typeof(x) == dtype & length(x) == n,
+      list(dtype = type_str, n = as.integer(n))
+    )
+  }
+
+  fn <- rlang::new_function(alist(x = ), body)
+  if (!is.na(default)) {
+    return(model_field(fn, default))
+  }
+
+  return(fn)
+}
+
+# ---
+Integer <- function(n = NULL, default = NA) {
+  BaseType("integer", n, default)
+}
+
+# ---
+Double <- function(n = NULL, default = NA) {
+  BaseType("double", n, default)
+}
+
+# ---
+Character <- function(n = NULL, default = NA) {
+  BaseType("character", n, default)
+}
+
+# ---
+Logical <- function(n = NULL, default = NA) {
+  BaseType("logical", n, default)
 }
