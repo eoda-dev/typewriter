@@ -51,6 +51,7 @@ model_config <- function(allow_extra = FALSE,
 #'  This is useful if you want to pass the arguments unnamed.
 #' @returns A model factory function.
 #' @example examples/api/base-model.R
+#' @importFrom utils modifyList
 #' @export
 base_model <- function(fields = list(), ...,
                        .model_config = model_config(),
@@ -59,23 +60,7 @@ base_model <- function(fields = list(), ...,
                        .validators_before = list(),
                        .validators_after = list(),
                        .strict_args_order = FALSE) {
-  fields <- utils::modifyList(fields, list(...), keep.null = TRUE)
-  # fields1 <- purrr::map(fields, ~ {
-  #   if (inherits(.x, c("function", "formula"))) {
-  #     return(model_field(fn = .x))
-  #   }
-  #
-  #   if (inherits(.x, CLASS_MODEL_FUNCTION)) {
-  #     model_fn <- .x
-  #     fn <- function(x) {
-  #       is.list(model_validate(x, model_fn))
-  #     }
-  #     return(model_field(fn = fn))
-  #   }
-  #
-  #   return(.x)
-  # })
-
+  fields <- modifyList(fields, list(...), keep.null = TRUE)
   fields <- Map(function(.x) {
     if (inherits(.x, CLASS_MODEL_FUNCTION)) {
       model_fn <- .x
@@ -85,13 +70,6 @@ base_model <- function(fields = list(), ...,
       return(model_field(fn = fn))
     }
 
-    # if (is.character(.x)) {
-    #  return(model_field(fn = type_check_fn_from_str(.x)))
-    # }
-
-    # if (inherits(.x, c("function", "formula"))) {
-    #  return(model_field(fn = .x))
-    # }
     if (!inherits(.x, CLASS_MODEL_FIELD)) {
       .x <- model_field(fn = .x)
     }
@@ -104,10 +82,7 @@ base_model <- function(fields = list(), ...,
   }, fields)
 
   # model_args <- purrr::map(fields, ~ .x$default)
-  model_args <- Map(function(x) {
-    x$default
-  }, fields)
-  # fn_args <- c(model_args, alist(... = , .x = NULL))
+  model_args <- Map(function(x) x$default, fields)
   fn_args <- c(alist(.x = NULL), model_args, alist(... = ))
   if (isTRUE(.strict_args_order)) {
     fn_args <- c(model_args, alist(... = , .x = NULL))
@@ -138,8 +113,6 @@ base_model <- function(fields = list(), ...,
         errors[[name]] <- list(
           name = name,
           value = obj_value,
-          # type = typeof(obj_value),
-          # len = length(obj_value),
           type_check_fn = type_check_fn
         )
       }

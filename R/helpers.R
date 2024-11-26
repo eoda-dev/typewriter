@@ -13,6 +13,11 @@ str_to_lower <- function(x) {
 }
 
 # ---
+numeric_to_integer <- function(x) {
+  ifelse(is.numeric(x), as.integer(x), x)
+}
+
+# ---
 is_not_null <- function(x) {
   isFALSE(is.null(x))
 }

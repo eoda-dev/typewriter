@@ -112,7 +112,17 @@ as_type_check_func <- function(type_check_fn) {
 }
 
 # ---
-# Example: Union(is.integer, is.null)
+#' Allow multiple types
+#' @param ... Type check functions
+#' @returns A type check function
+#' @examples {
+#'   m <- base_model(
+#'     a = Union(is.integer, is.null)
+#'   )
+#'   m(10L)
+#'   m(NULL)
+#' }
+#' @export
 Union <- function(...) {
   fns <- list(...)
   structure(
