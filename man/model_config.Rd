@@ -4,10 +4,10 @@
 \alias{model_config}
 \title{Create a model config object}
 \usage{
-model_config(allow_extra = FALSE, str_to_lower = FALSE, ...)
+model_config(extra = c("ignore", "allow", "forbid"), str_to_lower = FALSE, ...)
 }
 \arguments{
-\item{allow_extra}{Whether to allow extra fields without type check.}
+\item{extra}{Whether to allow extra fields without type check.}
 
 \item{str_to_lower}{Convert all strings to lower case.}
 
