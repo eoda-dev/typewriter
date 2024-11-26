@@ -93,11 +93,17 @@ A typed structure could be used as input for a function:
 
 ```{r}
 say_hello_to <- function(person) {
+  stopifnot(inherits(person, "Person"))
   paste("Hello", person$name, "you are", person$age, "years old!")
 }
 
 hanna <- Person(name = "Hanna", age = 10L)
 say_hello_to(hanna)
+
+hanna_as_list <- list(name = "Hanna", age = 10L)
+try(
+  say_hello_to(hanna_as_list)
+)
 ```
 
 You can also use it to validate a data frame:
