@@ -24,4 +24,3 @@ try(my_model(a = 12L)) # returns NA for b
 # Use defaults if none provided
 my_model <- model_from_template(template, use_defaults = TRUE, optional = FALSE)
 my_model(a = 12L)
-

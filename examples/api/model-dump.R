@@ -11,4 +11,6 @@ model_dump(
     this_is_an_integer = 10L,
     this_value_can_be_null = NULL,
     a_list = list(a = 1, b = NULL)
-  ), exclude_null = TRUE)
+  ),
+  exclude_null = TRUE
+)

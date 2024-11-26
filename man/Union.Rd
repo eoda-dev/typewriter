@@ -16,11 +16,14 @@ A type check function
 Allow multiple types
 }
 \examples{
-{
-  m <- base_model(
-    a = Union(is.integer, is.null)
-  )
-  m(10L)
-  m(NULL)
-}
+m <- typed_struct(
+  a = Union(is.integer, is.null),
+  b = Union("integer", "logical")
+)
+
+# Succeeds
+m(a = 10L, b = TRUE)
+
+# Also succeeds
+m(a = NULL, b = 10L)
 }

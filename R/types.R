@@ -17,6 +17,13 @@
 #' @export
 is_any <- function(x) TRUE
 
+Any <- function(n = NULL) {
+  if (is.null(x)) {
+    return(is_any)
+  }
+  return(function(x) length(x) == n)
+}
+
 #' Type predicate `typewriter model`
 #' @param model_fn A model factory function created with [base_model()].
 #' @export
@@ -97,13 +104,7 @@ Optional <- function(type_check_fn) {
 #' Allow multiple types
 #' @param ... Type check functions or type strings
 #' @returns A type check function
-#' @examples {
-#'   m <- base_model(
-#'     a = Union(is.integer, is.null)
-#'   )
-#'   m(10L)
-#'   m(NULL)
-#' }
+#' @example examples/api/types-union.R
 #' @export
 Union <- function(...) {
   fns <- lapply(list(...), as_type_check_func)
@@ -118,9 +119,13 @@ Union <- function(...) {
 # ---
 # Helper
 BaseType <- function(
-    type_str = c("integer", "double", "character", "logical", "list" ,"raw", "complex"),
+    type_str = c("integer", "double", "character", "logical", "list", "raw", "complex", "any"),
     n = NULL, default = NA) {
   match.arg(type_str)
+  if (type_str == "any") {
+    return(is_any)
+  }
+
   body <- substitute(typeof(x) == dtype, list(dtype = type_str))
 
   if (is_not_null(n)) {
