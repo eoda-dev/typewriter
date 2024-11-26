@@ -1,6 +1,6 @@
 # ---
 get_fn_text <- function(fn) {
-  if (rlang::is_primitive(fn)) {
+  if (rlang::is_primitive(fn) | is.list(fn)) {
     return(rlang::quo_text(fn))
   }
 

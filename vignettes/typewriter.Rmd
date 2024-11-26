@@ -27,7 +27,7 @@ The goal of typewriter is to add type safety to your R code and it is inspired b
 To make it adding type safety as fun as possible, a typed structure is just an extended R list where types are defined as _simple functions_ (like `is.integer`) or _type strings_ (like `"integer"`) for the basic R types:
 
 ```{r}
-my_type = base_model(
+my_type <- base_model(
   a_number = "integer",
   some_text = "character"
 )

@@ -93,3 +93,10 @@ f_x()
 if (FALSE) {
   print("Hi")
 }
+
+# --- Union
+my_model <- base_model(
+  a = Union(is.integer, is.na)
+)
+
+my_model(a = 10)

@@ -110,3 +110,15 @@ as_type_check_func <- function(type_check_fn) {
 
   rlang::as_function(type_check_fn)
 }
+
+# ---
+# Example: Union(is.integer, is.null)
+Union <- function(...) {
+  fns <- list(...)
+  structure(
+    function(x) {
+      any(unlist(lapply(fns, function(fn) fn(x))))
+    },
+    base_func = fns
+  )
+}
