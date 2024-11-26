@@ -98,6 +98,7 @@ base_model <- function(fields = list(), ...,
       obj <- c(as.list(environment()), list(...))
     }
 
+    caller_fn_name <- as.character(match.call()[[1]])
     errors <- list()
 
     obj <- validate_fields(obj, .validators_before)
@@ -142,7 +143,7 @@ base_model <- function(fields = list(), ...,
     if (.model_config$extra == "forbid") {
       extra_fields <- !names(obj) %in% names(fields)
       if (any(extra_fields)) {
-        stop("Forbidden fields: ", paste(names(obj)[extra_fields], collapse = ", "))
+        stop("Forbidden field(s): ", paste(names(obj)[extra_fields], collapse = ", "))
       }
     }
 
@@ -154,7 +155,7 @@ base_model <- function(fields = list(), ...,
       return(obj)
     }
 
-    return(structure(obj, fields = fields, class = c(class(obj), CLASS_MODEL)))
+    return(structure(obj, fields = fields, class = c(class(obj), CLASS_MODEL, caller_fn_name)))
   }))
 
   return(

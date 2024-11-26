@@ -16,58 +16,179 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(typewriter)
-library(rlang)
 ```
 
 The goal of typewriter is to add type safety to your R code and it is inspired by [Pydantic](https://docs.pydantic.dev/). Under the hood, it mainly uses base R functions to keep its dependencies as low as possible. It lets you
 
-* add types checks to your function arguments with `check_args()`.
-* create typed structures/lists with `base_model()` that can be used, among other things, to validate the types of your R objects like data frames.
+* add types checks to your function arguments with `check_args()`
+* create typed structures with `typed_struct()` and `base_model()`
 
-To make it adding type safety as fun as possible, a typed structure is just an extended R list where types are defined as _simple functions_ (like `is.integer`) or _type strings_ (like `"integer"`) for the basic R types:
+### Typed structures
+
+To make it adding type safety as fun as possible, a typed structure is just an extended R list where types are defined as _type check functions_ (like `is.integer`) or _type strings_ (like `"integer"`):
 
 ```{r}
-my_type <- base_model(
+my_type <- typed_struct(
   a_number = "integer",
   some_text = "character"
 )
 
-(obj <- my_type(a_number = 1L, some_text = "typewriter"))
+
+obj <- my_type(
+  a_number = 1L,
+  some_text = "typewriter"
+)
+
+obj
+
 class(obj)
 ```
 
 Try to assign a character value to an integer field:
 
 ```{r}
-try(obj$a_number <- "Hi")
+try(
+  obj$a_number <- "Hi"
+)
 ```
 
 Try to create a new object with an invalid type:
 
 ```{r}
-try(my_type(a_number = 1, some_text = "typewriter"))
+try(
+  my_type(
+    a_number = 1,
+    some_text = "typewriter"
+  )
+)
+```
+
+If you use _type strings_ as above, a `typed_struct` is very close to structures in type safe programming languages like _Rust_ or _Go_:
+
+```rust
+# Rust
+struct Person {
+    name: String,
+    age: u8
+}
+```
+
+```go
+# Go
+type Person struct {
+  name string
+  age int
+}
+```
+
+```{r}
+# R
+Person <- typed_struct(
+  name = "character",
+  age = "integer"
+)
+```
+
+A typed structure could be used as input for a function:
+
+```{r}
+say_hello_to <- function(person) {
+  paste("Hello", person$name, "you are", person$age, "years old!")
+}
+
+hanna <- Person(name = "Hanna", age = 10L)
+say_hello_to(hanna)
+```
+
+You can also use it to validate a data frame:
+
+```{r}
+df <- data.frame(
+  name = c("Peter", "Hanna"),
+  age = c(12L, 10L)
+)
+
+Person(df)
+
+df$id <- 1:2
+try(Person(df))
 ```
 
 A type can also be described as a function that takes the value to be validated as its only arguments and returns `TRUE` in case of success:
 
 ```{r}
-my_type <- base_model(
+my_type <- typed_struct(
   a_number = is.integer,
   some_text = is.character
 )
 
-(obj <- my_type(a_number = 1:2, some_text = "typewriter"))
-try(my_type(a_number = NULL, some_text = "typewriter"))
-```
-
-Maybe you just want to allow a single number and make `some_text` optional:
-
-```{r}
-my_type <- base_model(
-  a_number = function(x) is_integer(x) & length(x) == 1,
-  some_text = Optional(is_character)
+obj <- my_type(
+  a_number = 1:2,
+  some_text = "typewriter"
 )
 
-my_type(a_number = 1L)
-try(my_type(a_number = 1:2))
+obj
+
+try(
+  my_type(
+    a_number = NULL,
+    some_text = "typewriter"
+  )
+)
+```
+
+### Typed functions
+
+With `check_args()` you can add type checks to your functions:
+
+```{r}
+add_two_numbers <- function(a, b) {
+  check_args(
+    a = "integer",
+    b = "integer"
+  )
+  a + b
+}
+
+add_two_numbers(10L, 20L)
+
+try(
+  add_two_numbers(10, 20)
+)
+```
+
+It is also possible to add the type definition directly to the function arguments to make it visible to the user:
+
+```{r}
+multiply_two_numbers <- function(a = "integer", b = "integer:1") {
+  check_args()
+  a * b
+}
+
+try(
+  multiply_two_numbers(10L, 1:2)
+)
+```
+
+As you can see in the example above you can also check the length of the value by adding the length to the _type string_ `"integer:1"`.
+
+### The `base_model()` function
+
+Under the hood `typed_struct()` and `check_args()` uses `base_model()` that got its name from [Pydantic's](https://docs.pydantic.dev/) `BaseModel` class. It gives you further options like validating your inputs before the assignment:
+
+```{r}
+my_model <- base_model(
+  a = "integer",
+  b = "double",
+  .validators_before = list(
+    a = as.integer,
+    b = function(b) round(b, 2)
+  )
+)
+
+obj <- my_model(a = 10, b = 20.123456)
+
+typeof(obj$a)
+
+obj
 ```

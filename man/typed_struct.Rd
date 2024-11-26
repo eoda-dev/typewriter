@@ -9,6 +9,25 @@ typed_struct(...)
 \arguments{
 \item{...}{Type definitions (Type check functions)}
 }
+\value{
+A type factory function.
+}
 \description{
 Create a typed structure
+}
+\examples{
+Person <- typed_struct(
+  name = "character",
+  age = "integer"
+)
+
+hanna <- Person(
+  name = "Hanna",
+  age = 10L
+)
+
+hanna
+
+inherits(hanna, "Person")
+inherits(hanna, "list")
 }
