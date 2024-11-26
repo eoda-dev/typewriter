@@ -2,18 +2,18 @@
 % Please edit documentation in R/types.R
 \name{dtype}
 \alias{dtype}
-\title{Create a type check function (validator)}
+\title{Create a type check function}
 \usage{
 dtype(type_check, default = NA)
 }
 \arguments{
-\item{type_check}{description}
+\item{type_check}{Type check function or type string.}
 
 \item{default}{A default value.}
 }
 \value{
-A type check function (validator)
+A type check function
 }
 \description{
-Create a type check function (validator)
+Create a type check function
 }

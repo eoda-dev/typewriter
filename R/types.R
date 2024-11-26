@@ -27,18 +27,10 @@ is_typewriter_model <- function(model_fn) {
 }
 
 # ---
-dtype_integer <- function(n = NULL) {
-  fn <- function(x) {
-    typeof(x) == "integer" & length(x) == n
-  }
-  structure(fn, dtype = "integer", n = n)
-}
-
-# ---
 # Examples:
-#   integer
-#   integer:1
-#   optional:integer:1
+#   * integer
+#   * integer:1
+#   * optional:integer:1
 type_check_fn_from_str <- function(str) {
   optional <- FALSE
   if (startsWith(str, "optional:")) {
@@ -63,16 +55,17 @@ type_check_fn_from_str <- function(str) {
 }
 
 # ---
-#' Create a type check function (validator)
-#' @param type_check description
+#' Create a type check function
+#' @param type_check Type check function or type string.
 #' @param default A default value.
-#' @returns A type check function (validator)
+#' @returns A type check function
 #' @export
 dtype <- function(type_check, default = NA) {
   model_field(as_type_check_func(type_check), default)
 }
 
 # ---
+# Helper
 as_type_check_func <- function(type_check) {
   if (is.character(type_check)) {
     type_check <- type_check_fn_from_str(type_check)
@@ -83,8 +76,7 @@ as_type_check_func <- function(type_check) {
 
 # ---
 #' Mark a parameter as optional
-#' @param type_check_fn Type check function or type as
-#'  character like `integer` or `integer:1`.
+#' @param type_check_fn Type check function or type string.
 #' @example examples/api/type-is-optional.R
 #' @returns type check function
 #' @export
@@ -103,7 +95,7 @@ Optional <- function(type_check_fn) {
 
 # ---
 #' Allow multiple types
-#' @param ... Type check functions
+#' @param ... Type check functions or type strings
 #' @returns A type check function
 #' @examples {
 #'   m <- base_model(
@@ -124,7 +116,11 @@ Union <- function(...) {
 }
 
 # ---
-BaseType <- function(type_str, n = NULL, default = NA) {
+# Helper
+BaseType <- function(
+    type_str = c("integer", "double", "character", "logical", "list" ,"raw", "complex"),
+    n = NULL, default = NA) {
+  match.arg(type_str)
   body <- substitute(typeof(x) == dtype, list(dtype = type_str))
 
   if (is_not_null(n)) {
@@ -141,6 +137,8 @@ BaseType <- function(type_str, n = NULL, default = NA) {
 
   return(fn)
 }
+
+# --- Experimental
 
 # ---
 type_integer <- function(n = NULL, default = NA) {
@@ -160,4 +158,13 @@ type_character <- function(n = NULL, default = NA) {
 # ---
 type_logical <- function(n = NULL, default = NA) {
   BaseType("logical", n, default)
+}
+
+# ---
+# DEPRECATED
+dtype_integer <- function(n = NULL) {
+  fn <- function(x) {
+    typeof(x) == "integer" & length(x) == n
+  }
+  structure(fn, dtype = "integer", n = n)
 }

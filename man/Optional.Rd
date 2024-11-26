@@ -7,7 +7,7 @@
 Optional(type_check_fn)
 }
 \arguments{
-\item{type_check_fn}{Type check function or type as character like \code{integer} or \code{integer:1}.}
+\item{type_check_fn}{Type check function or type string.}
 }
 \value{
 type check function

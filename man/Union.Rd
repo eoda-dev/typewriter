@@ -7,7 +7,7 @@
 Union(...)
 }
 \arguments{
-\item{...}{Type check functions}
+\item{...}{Type check functions or type strings}
 }
 \value{
 A type check function
