@@ -109,3 +109,12 @@ my_struct <- typed_struct(
 )
 
 my_struct(a = 10L, txt = "Hi")
+
+library(rlang)
+
+my_type = typed_struct(
+  a = Union("integer", "character"),
+  b = "character"
+)
+
+my_type(r = 1L)

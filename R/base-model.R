@@ -121,7 +121,7 @@ base_model <- function(fields = list(), ...,
 
     obj <- validate_fields(obj, .validators_after)
 
-    if (isTRUE(.model_config$str_to_lower)) {
+    if (.model_config$str_to_lower) {
       # obj <- purrr::map_depth(obj, -1, str_to_lower)
       obj <- map_depth_base(obj, -1, str_to_lower)
     }
