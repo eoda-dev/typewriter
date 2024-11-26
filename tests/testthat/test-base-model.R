@@ -158,3 +158,34 @@ test_that("strict args order", {
   # Assert
   expect_equal(res, list(a = 4L, b = 2L))
 })
+
+# ---
+test_that("discard extra fields", {
+  # # Prepare
+  my_model <- base_model(
+    cyl = is.double,
+    mpg = is.double
+  )
+
+  # Act
+  res <- my_model(mtcars)
+
+  # Assert
+  expect_equal(ncol(res), 2)
+})
+
+# ---
+test_that("allow extra fields", {
+  # # Prepare
+  my_model <- base_model(
+    cyl = is.double,
+    mpg = is.double,
+    .model_config = model_config(extra = "allow")
+  )
+
+  # Act
+  res <- my_model(mtcars)
+
+  # Assert
+  expect_equal(ncol(res), 11)
+})
