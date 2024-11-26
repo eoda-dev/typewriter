@@ -36,8 +36,9 @@ dtype_integer <- function(n = NULL) {
 
 # ---
 # Examples:
-#   str = "integer"
-#   str = "integer:1"
+#   integer
+#   integer:1
+#   optional:integer:1
 type_check_fn_from_str <- function(str) {
   optional <- FALSE
   if (startsWith(str, "optional:")) {
@@ -47,30 +48,13 @@ type_check_fn_from_str <- function(str) {
 
   values <- unlist(strsplit(str, ":"))
   dtype <- values[1]
-  # fn_str <- glue::glue('function(x) typeof(x) == "{dtype}"')
-  # if (length(values) == 2) {
-  #   fn_str = paste(fn_str, "& length(x) ==", values[2])
-  # }
-
-  # eval(parse(text = fn_str))
-  fn_args <- alist(x = )
-  body <- substitute(
-    {
-      typeof(x) == dtype
-    },
-    list(dtype = dtype)
-  )
+  n <- NULL
   if (length(values) == 2) {
-    n <- as.integer(values[2])
-    body <- substitute(
-      {
-        typeof(x) == dtype & length(x) == n
-      },
-      list(dtype = dtype, n = n)
-    )
+    n <- values[2]
   }
 
-  fn <- rlang::new_function(fn_args, body)
+  fn <- BaseType(dtype, n)
+
   if (optional) {
     return(Optional(fn))
   }
@@ -89,12 +73,12 @@ dtype <- function(type_check, default = NA) {
 }
 
 # ---
-as_type_check_func <- function(type_check_fn) {
-  if (is.character(type_check_fn)) {
-    type_check_fn <- type_check_fn_from_str(type_check_fn)
+as_type_check_func <- function(type_check) {
+  if (is.character(type_check)) {
+    type_check <- type_check_fn_from_str(type_check)
   }
 
-  rlang::as_function(type_check_fn)
+  rlang::as_function(type_check)
 }
 
 # ---
@@ -130,7 +114,7 @@ Optional <- function(type_check_fn) {
 #' }
 #' @export
 Union <- function(...) {
-  fns <- list(...)
+  fns <- lapply(list(...), as_type_check_func)
   structure(
     function(x) {
       any(unlist(lapply(fns, function(fn) fn(x))))
@@ -159,21 +143,21 @@ BaseType <- function(type_str, n = NULL, default = NA) {
 }
 
 # ---
-Integer <- function(n = NULL, default = NA) {
+type_integer <- function(n = NULL, default = NA) {
   BaseType("integer", n, default)
 }
 
 # ---
-Double <- function(n = NULL, default = NA) {
+type_double <- function(n = NULL, default = NA) {
   BaseType("double", n, default)
 }
 
 # ---
-Character <- function(n = NULL, default = NA) {
+type_character <- function(n = NULL, default = NA) {
   BaseType("character", n, default)
 }
 
 # ---
-Logical <- function(n = NULL, default = NA) {
+type_logical <- function(n = NULL, default = NA) {
   BaseType("logical", n, default)
 }
