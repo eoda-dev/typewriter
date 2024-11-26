@@ -70,7 +70,8 @@ mtcars_model <- base_model(
   .validators_before = list(
     cyl = as.integer,
     gear = as.integer
-  )
+  ),
+  .model_config = model_config(extra = "forbid")
 )
 
 mtcars_model(mtcars)

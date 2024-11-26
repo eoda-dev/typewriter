@@ -21,15 +21,16 @@ model_field <- function(fn, default = NA, alias = NULL, error_msg = NULL, ...) {
 
 # ---
 #' Create a model config object
-#' @param allow_extra Whether to allow extra fields without type check.
+#' @param extra Whether to allow extra fields without type check.
 #' @param str_to_lower Convert all strings to lower case.
 #' @param ... **not used** at the moment
 #' @returns A model config object that can be used in [base_model()].
 #' @example examples/api/model-config.R
 #' @export
-model_config <- function(allow_extra = FALSE,
+model_config <- function(extra = c("ignore", "allow", "forbid"),
                          str_to_lower = FALSE, ...) {
   obj <- c(as.list(environment()), list(...))
+  obj$extra <- match.arg(extra)
   base_class <- class(obj)
   return(structure(obj, class = c(base_class, CLASS_MODEL_CONFIG)))
 }
@@ -84,7 +85,7 @@ base_model <- function(fields = list(), ...,
   # model_args <- purrr::map(fields, ~ .x$default)
   model_args <- Map(function(x) x$default, fields)
   fn_args <- c(alist(.x = NULL), model_args, alist(... = ))
-  if (isTRUE(.strict_args_order)) {
+  if (.strict_args_order) {
     fn_args <- c(model_args, alist(... = , .x = NULL))
   }
 
@@ -109,7 +110,7 @@ base_model <- function(fields = list(), ...,
       type_check_fn <- rlang::as_function(fields[[name]]$fn)
       obj_value <- obj[[name]]
 
-      if (!isTRUE(all(type_check_fn(obj_value)))) {
+      if (!all(type_check_fn(obj_value))) {
         errors[[name]] <- list(
           name = name,
           value = obj_value,
@@ -134,9 +135,15 @@ base_model <- function(fields = list(), ...,
       return(invisible(obj))
     }
 
-    if (isFALSE(.model_config$allow_extra)) {
-      # obj <- purrr::keep_at(obj, names(fields))
+    if (.model_config$extra == "ignore") {
       obj <- obj[names(fields)]
+    }
+
+    if (.model_config$extra == "forbid") {
+      extra_fields <- !names(obj) %in% names(fields)
+      if (any(extra_fields)) {
+        stop("Forbidden fields: ", paste(names(obj)[extra_fields], collapse = ", "))
+      }
     }
 
     if (is_not_null(.model_post_init)) {
