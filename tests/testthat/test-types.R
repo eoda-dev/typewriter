@@ -3,7 +3,7 @@ test_that("check is optional", {
   # Prepare
   my_model <- base_model(
     a = is.integer,
-    b = Optional(is.integer)
+    b = optional(is.integer)
   )
 
   # Act

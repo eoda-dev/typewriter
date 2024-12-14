@@ -87,7 +87,7 @@ as_type_check_func <- function(type_check) {
 #' @example examples/api/type-is-optional.R
 #' @returns type check function
 #' @export
-Optional <- function(type_check_fn) {
+optional <- function(type_check_fn) {
   if (inherits(type_check_fn, CLASS_MODEL_FIELD)) {
     stop(CLASS_MODEL_FIELD, " objects are not supported.")
   }

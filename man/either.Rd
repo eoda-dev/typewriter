@@ -17,8 +17,8 @@ Allow multiple types
 }
 \examples{
 m <- typed_struct(
-  a = Union(is.integer, is.null),
-  b = Union("integer", "logical")
+  a = either(is.integer, is.null),
+  b = either("integer", "logical")
 )
 
 # Succeeds
