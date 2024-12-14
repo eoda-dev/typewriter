@@ -106,7 +106,7 @@ Optional <- function(type_check_fn) {
 #' @returns A type check function
 #' @example examples/api/types-union.R
 #' @export
-Union <- function(...) {
+either <- function(...) {
   fns <- lapply(list(...), as_type_check_func)
   structure(
     function(x) {

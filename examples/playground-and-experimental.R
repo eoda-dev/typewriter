@@ -97,7 +97,7 @@ if (FALSE) {
 
 # --- Union
 my_model <- base_model(
-  a = Union(is.integer, is.na)
+  a = either(is.integer, \(x) is.na(x), is.double)
 )
 
 my_model(a = 10)
