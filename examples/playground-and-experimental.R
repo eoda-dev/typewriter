@@ -118,3 +118,25 @@ my_type = typed_struct(
 )
 
 my_type(r = 1L)
+
+# ---
+Person <- typed_struct(
+  name = "character",
+  age = "integer"
+)
+
+p <- list(name = "Hans", age = 20L)
+
+say_hi_to <- function(p) {
+  stopifnot(inherits(p, "Person"))
+  paste("Hi", p$name)
+}
+
+class(p)
+say_hi_to(p)
+
+# ---
+for (i in 1:2) {
+  if (i == 1L) next()
+  message(i)
+}

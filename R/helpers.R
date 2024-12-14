@@ -150,3 +150,11 @@ map_depth_base <- function(.x, .depth, .f) {
     }))
   }
 }
+
+# ---
+describe_typed_struct <- function(obj) {
+  def <- rlang::fn_fmls(obj)
+  def$.x <- NULL
+  def$... <- NULL
+  return(def)
+}

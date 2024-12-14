@@ -12,11 +12,14 @@ model_fields <- function(model_fn) {
 #' @returns A model field.
 #' @export
 model_field <- function(fn, default = NA, alias = NULL, error_msg = NULL, ...) {
-  # l <- as.list(environment())
-  # return(structure(c(l, list(...)), class = CLASS_MODEL_FIELD))
   obj <- c(as.list(environment()), list(...))
   base_class <- class(obj)
   structure(obj, class = c(base_class, CLASS_MODEL_FIELD))
+}
+
+model_field_new <- function(type, default = NA, alias = NULL) {
+  base_class <- class(type)
+  structure(type, class = c(base_class, CLASS_MODEL_FIELD), default = default, alias = alias)
 }
 
 # ---
