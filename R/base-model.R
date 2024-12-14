@@ -18,15 +18,13 @@ model_field <- function(fn, default = NA, alias = NULL, error_msg = NULL, ...) {
 }
 
 # ---
-#' Create a model config object
-#' @param extra Whether to allow extra fields without type check.
-#' @param str_to_lower Convert all strings to lower case.
-#' @param ... **not used** at the moment
-#' @returns A model config object that can be used in [base_model()].
-#' @example examples/api/model-config.R
-#' @export
-model_config <- function(extra = c("ignore", "allow", "forbid"),
-                         str_to_lower = FALSE, ...) {
+# #' Create a model config object
+# #' DEPRECATED
+# #' @param extra Whether to allow extra fields without type check.
+# #' @param ... **not used** at the moment
+# #' @returns A model config object that can be used in [base_model()].
+# #' @example examples/api/model-config.R
+model_config <- function(extra = c("ignore", "allow", "forbid"), ...) {
   obj <- c(as.list(environment()), list(...))
   obj$extra <- match.arg(extra)
   base_class <- class(obj)
@@ -38,7 +36,6 @@ model_config <- function(extra = c("ignore", "allow", "forbid"),
 #' @param fields A named list of field definitions.
 #' @param ... Named arguments of field definitions.
 #'  Normally either `fields` or `...` is supplied.
-#' @param .model_config See [model_config()].
 #' @param .model_pre_init A callback function that is executed before the type checks.
 #' @param .model_post_init A callback function that is executed after the type checks.
 #' @param .validators_before A named list of field validators
@@ -48,19 +45,21 @@ model_config <- function(extra = c("ignore", "allow", "forbid"),
 #' @param .strict_args_order If set to `TRUE`, the `.x` parameter
 #'  of the returned model factory function will be the last function argument.
 #'  This is useful if you want to pass the arguments unnamed.
-#' @param allow_na Whether to allow `NA` values for all fields.
+#' @param .allow_na Whether to allow `NA` values for all fields.
+#' @param .extra Whether to allow extra fields without type check.
 #' @returns A model factory function.
 #' @example examples/api/base-model.R
 #' @importFrom utils modifyList
 #' @export
 base_model <- function(fields = list(), ...,
-                       .model_config = model_config(),
                        .model_pre_init = NULL,
                        .model_post_init = NULL,
                        .validators_before = list(),
                        .validators_after = list(),
                        .strict_args_order = FALSE,
-                       .allow_na = FALSE) {
+                       .allow_na = FALSE,
+                       .extra = c("ignore", "allow", "forbid")) {
+  .extra <- match.arg(.extra)
   fields <- modifyList(fields, list(...), keep.null = TRUE)
   fields <- Map(function(.x) {
     if (inherits(.x, CLASS_MODEL_FUNCTION)) {
@@ -137,11 +136,11 @@ base_model <- function(fields = list(), ...,
       return(invisible(obj))
     }
 
-    if (.model_config$extra == "ignore") {
+    if (.extra == "ignore") {
       obj <- obj[names(fields)]
     }
 
-    if (.model_config$extra == "forbid") {
+    if (.extra == "forbid") {
       extra_fields <- !names(obj) %in% names(fields)
       if (any(extra_fields)) {
         stop("Forbidden field(s): ", paste(names(obj)[extra_fields], collapse = ", "))

@@ -7,5 +7,5 @@
 #' @export
 typed_struct <- function(..., .allow_na = FALSE) {
   types <- list(...)
-  base_model(types, .model_config = model_config(extra = "forbid"), .allow_na = .allow_na)
+  base_model(types, .extra = "forbid", .allow_na = .allow_na)
 }
