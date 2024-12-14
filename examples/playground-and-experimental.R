@@ -118,3 +118,24 @@ my_type = typed_struct(
 )
 
 my_type(r = 1L)
+
+# --- Allow NA
+devtools::load_all()
+
+my_model <- base_model(
+  a = "integer",
+  b = "character",
+  .allow_na = TRUE
+)
+
+my_model()
+
+#
+another_type <- typed_struct(
+  a = "integer",
+  b = "integer",
+  .allow_na = TRUE
+)
+
+at <- another_type(a = 1L)
+class(at)

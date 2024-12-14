@@ -12,7 +12,8 @@ base_model(
   .model_post_init = NULL,
   .validators_before = list(),
   .validators_after = list(),
-  .strict_args_order = FALSE
+  .strict_args_order = FALSE,
+  .allow_na = FALSE
 )
 }
 \arguments{
@@ -36,6 +37,8 @@ that are executed after the type checks.}
 \item{.strict_args_order}{If set to \code{TRUE}, the \code{.x} parameter
 of the returned model factory function will be the last function argument.
 This is useful if you want to pass the arguments unnamed.}
+
+\item{allow_na}{Whether to allow \code{NA} values for all fields.}
 }
 \value{
 A model factory function.

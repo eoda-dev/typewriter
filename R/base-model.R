@@ -48,6 +48,7 @@ model_config <- function(extra = c("ignore", "allow", "forbid"),
 #' @param .strict_args_order If set to `TRUE`, the `.x` parameter
 #'  of the returned model factory function will be the last function argument.
 #'  This is useful if you want to pass the arguments unnamed.
+#' @param allow_na Whether to allow `NA` values for all fields.
 #' @returns A model factory function.
 #' @example examples/api/base-model.R
 #' @importFrom utils modifyList
@@ -58,7 +59,8 @@ base_model <- function(fields = list(), ...,
                        .model_post_init = NULL,
                        .validators_before = list(),
                        .validators_after = list(),
-                       .strict_args_order = FALSE) {
+                       .strict_args_order = FALSE,
+                       .allow_na = FALSE) {
   fields <- modifyList(fields, list(...), keep.null = TRUE)
   fields <- Map(function(.x) {
     if (inherits(.x, CLASS_MODEL_FUNCTION)) {
@@ -80,7 +82,6 @@ base_model <- function(fields = list(), ...,
     return(.x)
   }, fields)
 
-  # model_args <- purrr::map(fields, ~ .x$default)
   model_args <- Map(function(x) x$default, fields)
   fn_args <- c(alist(.x = NULL), model_args, alist(... = ))
   if (.strict_args_order) {
@@ -107,12 +108,15 @@ base_model <- function(fields = list(), ...,
 
     for (name in names(fields)) {
       type_check_fn <- rlang::as_function(fields[[name]]$fn)
-      obj_value <- obj[[name]]
+      value <- obj[[name]]
+      if(.allow_na) {
+        if (length(value) == 1L && is.na(value)) next()
+      }
 
-      if (!all(type_check_fn(obj_value))) {
+      if (!all(type_check_fn(value))) {
         errors[[name]] <- list(
           name = name,
-          value = obj_value,
+          value = value,
           type_check_fn = type_check_fn
         )
       }
@@ -120,10 +124,9 @@ base_model <- function(fields = list(), ...,
 
     obj <- validate_fields(obj, .validators_after)
 
-    if (.model_config$str_to_lower) {
-      # obj <- purrr::map_depth(obj, -1, str_to_lower)
-      obj <- map_depth_base(obj, -1, str_to_lower)
-    }
+    #if (.model_config$str_to_lower) {
+    #  obj <- map_depth_base(obj, -1, str_to_lower)
+    #}
 
     if (length(errors) > 0) {
       msg <- paste0(map_type_check_errors(errors), collapse = "\n")
