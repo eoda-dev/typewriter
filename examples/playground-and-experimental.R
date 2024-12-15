@@ -112,7 +112,7 @@ my_struct(a = 10L, txt = "Hi")
 
 library(rlang)
 
-my_type = typed_struct(
+my_type <- typed_struct(
   a = Union("integer", "character"),
   b = "character"
 )
@@ -143,9 +143,14 @@ class(at)
 # ---
 
 just_type <- typed_struct(
-  a = \(a) stopifnot("'a' must be an integer" = is.integer(a)),
+  a = function(a) {
+    stopifnot("'a' must be an integer of length 1" = length(a) == 1 & is.integer(a))
+    },
   b = "double",
-  z = \(z) stopifnot("'z' must be integer or double\nyep" = either("integer", "double") )
+  z = function(z) {
+    stopifnot("'z' must be integer or double" = either("integer", "double")(z))
+  },
+  x = model_field(is.integer, optional = FALSE)
 )
 
-just_type(a = 10L, b = 10, z = TRUE)
+just_type(a = 1L, b = "10", z = 10)

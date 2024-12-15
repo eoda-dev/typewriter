@@ -7,11 +7,12 @@ model_fields <- function(model_fn) {
 #' Create a model field
 #' @param fn A type check function.
 #' @param default A default value for the field.
+#' @param optional Whether the field is optional.
 #' @param alias alias that can be used in [model_dump()]
 #' @param error_msg,... **not used** at the moment
 #' @returns A model field.
 #' @export
-model_field <- function(fn, default = NA, alias = NULL, error_msg = NULL, ...) {
+model_field <- function(fn, default = NA, optional = FALSE, alias = NULL, error_msg = NULL, ...) {
   obj <- c(as.list(environment()), list(...))
   base_class <- class(obj)
   structure(obj, class = c(base_class, CLASS_MODEL_FIELD))
@@ -106,9 +107,10 @@ base_model <- function(fields = list(), ...,
     }
 
     for (name in names(fields)) {
-      check_type <- rlang::as_function(fields[[name]]$fn)
+      field <- fields[[name]]
+      check_type <- rlang::as_function(field$fn)
       value <- obj[[name]]
-      if(.allow_na) {
+      if(.allow_na | field$optional) {
         if (length(value) == 1L && is.na(value)) next()
       }
 

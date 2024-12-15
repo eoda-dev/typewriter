@@ -22,7 +22,7 @@ create_type_check_error_message <- function(error) {
   class_text <- paste(class(value), collapse = ", ")
 
   msg <- c(
-    glue::glue("# ---\nType check failed for '{error$name}'"),
+    glue::glue("---\nType check failed for '{error$name}'"),
     paste("value:", value_text),
     paste("type:", typeof(value)),
     paste("class:", class_text),
