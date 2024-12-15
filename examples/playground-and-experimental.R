@@ -162,3 +162,11 @@ xx <- base_model(
 
 xx(a = NULL) |>
   dump_by_alias()
+
+# ---
+mt <- typed_struct(
+  a = integer(1),
+  b = logical() #, .allow_na = TRUE
+)
+
+mt(a = iris$Sepal.Length, b = TRUE)

@@ -18,6 +18,7 @@
 is_any <- function(x) TRUE
 
 # ---
+# DEPRECATED
 Any <- function(n = NULL) {
   if (is.null(x)) {
     return(is_any)
@@ -35,11 +36,42 @@ is_typewriter_model <- function(model_fn) {
 }
 
 # ---
+is_logical <- function(x) {
+  all(is.logical(x) & !is.na(x))
+}
+
+# ---
+create_model_field <- function(
+    dtype = c("integer", "double", "character", "logical", "list", "raw", "complex", "any"),
+    n = NULL,
+    optional = FALSE) {
+  # Body
+  type_str <- match.arg(dtype)
+  base_fn <- function(x) typeof(x) == dtype
+  if (dtype == "logical") {
+    base_fn <- is_logical
+  }
+
+  error_msg <- paste("value must be of type", dtype)
+  check_type <- base_fn
+  if (is_not_null(n)) {
+    error_msg <- paste0(error_msg, "(", n, ")")
+    check_type <- function(x) base_fn(x) & length(x) == n
+  }
+
+  model_field(
+    fn = check_type,
+    optional = optional,
+    error_msg = error_msg
+  )
+}
+
+# ---
 # Examples:
 #   * integer
 #   * integer:1
 #   * optional:integer:1
-type_check_fn_from_str <- function(str) {
+model_field_from_str <- function(str) {
   optional <- FALSE
   if (startsWith(str, "optional:")) {
     optional <- TRUE
@@ -53,27 +85,62 @@ type_check_fn_from_str <- function(str) {
     n <- values[2]
   }
 
-  fn <- base_type(dtype, n)
-
-  if (optional) {
-    return(Optional(fn))
-  }
-
-  fn
+  create_model_field(dtype, n, optional)
 }
 
 # ---
-#' Create a type check function
-#' @param type_check Type check function or type string.
+# Examples:
+#   * integer()
+#   * integer(1)
+model_field_from_vec <- function(vec) {
+  dtype = typeof(vec)
+  n = length(vec)
+  if (n == 0) {
+    n <- NULL
+  }
+
+  create_model_field(dtype, n)
+}
+
+# ---
+is_dtype_str <- function(obj) {
+  if (length(obj) == 1 & typeof(obj) == "character") {
+    if (nchar(obj) > 0) return(TRUE)
+  }
+
+  FALSE
+}
+
+# ---
+as_model_field <- function(x) {
+  if (is_dtype_str(x)) {
+    return(model_field_from_str(x))
+  }
+
+  if (is.function(x)) {
+    return(model_field(fn = x))
+  }
+
+  model_field_from_vec(x)
+}
+
+# ---
+#' Create a model field
+#' @param x A type check function or type string.
 #' @param default A default value.
+#' @param optional description
 #' @returns A type check function
 #' @export
-dtype <- function(type_check, default = NA) {
-  model_field(as_type_check_func(type_check), default)
+dtype <- function(x, default = NA, optional = FALSE) {
+  field <- as_model_field(x)
+  field$default <- default
+  field$optional <- optional
+  return(field)
 }
 
 # ---
 # Helper
+# DEPRECATED
 as_type_check_func <- function(type_check) {
   if (is.character(type_check)) {
     type_check <- type_check_fn_from_str(type_check)
@@ -81,6 +148,7 @@ as_type_check_func <- function(type_check) {
 
   rlang::as_function(type_check)
 }
+#### DEPRECATED ####
 
 # ---
 #' Mark a parameter as optional
@@ -88,6 +156,7 @@ as_type_check_func <- function(type_check) {
 #' @example examples/api/type-is-optional.R
 #' @returns type check function
 #' @export
+# TODO: Refactor to support model_fields
 optional <- function(type_check_fn) {
   if (inherits(type_check_fn, CLASS_MODEL_FIELD)) {
     stop(CLASS_MODEL_FIELD, " objects are not supported.")
@@ -118,11 +187,6 @@ either <- function(...) {
 }
 
 # ---
-is_logical <- function(x) {
-  all(is.logical(x) & !is.na(x))
-}
-
-# ---
 # Helper
 base_type <- function(
     type_str = c("integer", "double", "character", "logical", "list", "raw", "complex", "any"),
@@ -148,28 +212,6 @@ base_type <- function(
   }
 
   return(fn)
-}
-
-# ---
-base_type2 <- function(type_str, n = NULL) {
-  base_fn <- function(x) typeof(x) == type_str
-  if (type_str == "logical") {
-    base_fn <- is_logical
-  }
-
-  error_msg <- paste("value must be of type", type_str)
-
-  if (is_not_null(n)) {
-    # return(function(x) base_fn(x) & length(x) == n)
-    error_msg <- paste0(error_msg, "(", n, ")")
-    return(model_field(
-      fn = function(x) base_fn(x) & length(x) == n,
-      error_msg = error_msg
-    ))
-  }
-
-  # return(base_fn)
-  return(model_field(base_fn, error_msg = error_msg))
 }
 
 # --- Experimental

@@ -72,12 +72,13 @@ base_model <- function(fields = list(), ...,
     }
 
     if (!inherits(.x, CLASS_MODEL_FIELD)) {
-      .x <- model_field(fn = .x)
+      # .x <- model_field(fn = .x)
+      .x <- as_model_field(.x)
     }
 
-    if (is.character(.x$fn)) {
-      .x$fn <- type_check_fn_from_str(.x$fn)
-    }
+    #if (is.character(.x$fn)) {
+    #  .x$fn <- type_check_fn_from_str(.x$fn)
+    #}
 
     return(.x)
   }, fields)
@@ -118,7 +119,8 @@ base_model <- function(fields = list(), ...,
         errors[[name]] <- list(
           name = name,
           value = value,
-          type_check_fn = check_type
+          type_check_fn = check_type,
+          msg = field$error_msg
         )
       }
     }
@@ -219,11 +221,11 @@ print.typewriter <- function(x, ...) {
 
 # ---
 check_assignment <- function(x, name, value) {
-  fields <- model_fields(x)
-  type_check_fn <- rlang::as_function(fields[[name]]$fn)
-  fn_text <- get_fn_text(type_check_fn)
-  if (isFALSE(type_check_fn(value))) {
-    stop(paste0("Type check failed.\n", fn_text))
+  field <- model_fields(x)[[name]]
+  check_type <- rlang::as_function(field$fn)
+  error_msg <- ifelse(is_not_null(field$error_msg), field$error_msg, get_fn_text(check_type))
+  if (!check_type(value)) {
+    stop(paste0("Type check failed.\n", error_msg))
   }
 }
 
