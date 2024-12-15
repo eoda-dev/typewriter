@@ -139,3 +139,13 @@ another_type <- typed_struct(
 
 at <- another_type(a = 1L)
 class(at)
+
+# ---
+
+just_type <- typed_struct(
+  a = \(a) stopifnot("'a' must be an integer" = is.integer(a)),
+  b = "double",
+  z = \(z) stopifnot("'z' must be integer or double\nyep" = either("integer", "double") )
+)
+
+just_type(a = 10L, b = 10, z = TRUE)

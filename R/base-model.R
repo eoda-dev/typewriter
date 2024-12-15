@@ -106,26 +106,22 @@ base_model <- function(fields = list(), ...,
     }
 
     for (name in names(fields)) {
-      type_check_fn <- rlang::as_function(fields[[name]]$fn)
+      check_type <- rlang::as_function(fields[[name]]$fn)
       value <- obj[[name]]
       if(.allow_na) {
         if (length(value) == 1L && is.na(value)) next()
       }
 
-      if (!all(type_check_fn(value))) {
+      if (!all(check_type(value))) {
         errors[[name]] <- list(
           name = name,
           value = value,
-          type_check_fn = type_check_fn
+          type_check_fn = check_type
         )
       }
     }
 
     obj <- validate_fields(obj, .validators_after)
-
-    #if (.model_config$str_to_lower) {
-    #  obj <- map_depth_base(obj, -1, str_to_lower)
-    #}
 
     if (length(errors) > 0) {
       msg <- paste0(map_type_check_errors(errors), collapse = "\n")
