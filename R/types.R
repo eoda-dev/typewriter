@@ -117,7 +117,13 @@ either <- function(...) {
 }
 
 # ---
+is_logical <- function(x) {
+  all(is.logical(x) & !is.na(x))
+}
+
+# ---
 # Helper
+# TODO: Rename to 'base_type'
 BaseType <- function(
     type_str = c("integer", "double", "character", "logical", "list", "raw", "complex", "any"),
     n = NULL, default = NA) {
