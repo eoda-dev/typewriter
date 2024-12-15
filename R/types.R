@@ -157,11 +157,19 @@ base_type2 <- function(type_str, n = NULL) {
     base_fn <- is_logical
   }
 
+  error_msg <- paste("value must be of type", type_str)
+
   if (is_not_null(n)) {
-    return(function(x) base_fn(x) & length(x) == n)
+    # return(function(x) base_fn(x) & length(x) == n)
+    error_msg <- paste0(error_msg, "(", n, ")")
+    return(model_field(
+      fn = function(x) base_fn(x) & length(x) == n,
+      error_msg = error_msg
+    ))
   }
 
-  return(base_fn)
+  # return(base_fn)
+  return(model_field(base_fn, error_msg = error_msg))
 }
 
 # --- Experimental
