@@ -17,6 +17,7 @@
 #' @export
 is_any <- function(x) TRUE
 
+# ---
 Any <- function(n = NULL) {
   if (is.null(x)) {
     return(is_any)
@@ -52,7 +53,7 @@ type_check_fn_from_str <- function(str) {
     n <- values[2]
   }
 
-  fn <- BaseType(dtype, n)
+  fn <- base_type(dtype, n)
 
   if (optional) {
     return(Optional(fn))
@@ -123,10 +124,10 @@ is_logical <- function(x) {
 
 # ---
 # Helper
-# TODO: Rename to 'base_type'
-BaseType <- function(
+base_type <- function(
     type_str = c("integer", "double", "character", "logical", "list", "raw", "complex", "any"),
-    n = NULL, default = NA) {
+    n = NULL,
+    default = NA) {
   match.arg(type_str)
   if (type_str == "any") {
     return(is_any)
@@ -149,26 +150,40 @@ BaseType <- function(
   return(fn)
 }
 
+# ---
+base_type2 <- function(type_str, n = NULL) {
+  base_fn <- function(x) typeof(x) == type_str
+  if (type_str == "logical") {
+    base_fn <- is_logical
+  }
+
+  if (is_not_null(n)) {
+    return(function(x) base_fn(x) & length(x) == n)
+  }
+
+  return(base_fn)
+}
+
 # --- Experimental
 
 # ---
 type_integer <- function(n = NULL, default = NA) {
-  BaseType("integer", n, default)
+  base_type("integer", n, default)
 }
 
 # ---
 type_double <- function(n = NULL, default = NA) {
-  BaseType("double", n, default)
+  base_type("double", n, default)
 }
 
 # ---
 type_character <- function(n = NULL, default = NA) {
-  BaseType("character", n, default)
+  base_type("character", n, default)
 }
 
 # ---
 type_logical <- function(n = NULL, default = NA) {
-  BaseType("logical", n, default)
+  base_type("logical", n, default)
 }
 
 # ---

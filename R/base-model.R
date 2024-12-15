@@ -110,7 +110,7 @@ base_model <- function(fields = list(), ...,
       field <- fields[[name]]
       check_type <- rlang::as_function(field$fn)
       value <- obj[[name]]
-      if(.allow_na | field$optional) {
+      if (.allow_na | field$optional) {
         if (length(value) == 1L && is.na(value)) next()
       }
 
