@@ -154,3 +154,11 @@ just_type <- typed_struct(
 )
 
 just_type(a = 1L, b = "10", z = 10)
+
+# ---
+xx <- base_model(
+  a = model_field(either(is.numeric, is.null), alias = "aB")
+)
+
+xx(a = NULL) |>
+  dump_by_alias()

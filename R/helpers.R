@@ -106,7 +106,8 @@ dump_by_alias <- function(obj, fields = NULL) {
     if (inherits(value, CLASS_MODEL)) {
       l[[new_name]] <- dump_by_alias(value)
     } else {
-      l[[new_name]] <- value
+      # l[[new_name]] <- value
+      l[[new_name]] <- ifelse(is.null(value), list(NULL), value)
     }
   }
 
@@ -149,4 +150,21 @@ map_depth_base <- function(.x, .depth, .f) {
       }
     }))
   }
+}
+
+# ---
+assign_values <- function(x, ...) {
+  l <- list(...)
+  for (name in names(l)) {
+    value <- l[[name]]
+    x[[name]] <- ifelse(is.null(value), list(NULL), value)
+  }
+
+  x
+}
+
+# ---
+assign_value <- function(x, name, value) {
+  x[[name]] <- ifelse(is.null(value), list(NULL), value)
+  x
 }
