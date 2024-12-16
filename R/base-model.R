@@ -9,7 +9,8 @@ model_fields <- function(model_fn) {
 #' @param default A default value for the field.
 #' @param optional Whether the field is optional.
 #' @param alias alias that can be used in [model_dump()]
-#' @param error_msg,... **not used** at the moment
+#' @param error_msg A custom error message.
+#' @param ... **not used** at the moment
 #' @returns A model field.
 #' @export
 model_field <- function(fn, default = NA, optional = FALSE, alias = NULL, error_msg = NULL, ...) {
@@ -72,13 +73,8 @@ base_model <- function(fields = list(), ...,
     }
 
     if (!inherits(.x, CLASS_MODEL_FIELD)) {
-      # .x <- model_field(fn = .x)
       .x <- as_model_field(.x)
     }
-
-    #if (is.character(.x$fn)) {
-    #  .x$fn <- type_check_fn_from_str(.x$fn)
-    #}
 
     return(.x)
   }, fields)
