@@ -4,22 +4,14 @@
 \alias{optional}
 \title{Mark a parameter as optional}
 \usage{
-optional(type_check_fn)
+optional(obj)
 }
 \arguments{
-\item{type_check_fn}{Type check function or type string.}
+\item{obj}{A type definition object.}
 }
 \value{
-type check function
+A \code{\link[=model_field]{model_field()}} with \code{optional = TRUE}.
 }
 \description{
 Mark a parameter as optional
-}
-\examples{
-my_model <- base_model(
-  a = "integer",
-  b = optional("integer")
-)
-
-my_model(a = 10L)
 }

@@ -2,18 +2,18 @@
 % Please edit documentation in R/types.R
 \name{dtype}
 \alias{dtype}
-\title{Create a type check function}
+\title{Create a model field/type definition}
 \usage{
-dtype(type_check, default = NA)
+dtype(x, default = NA)
 }
 \arguments{
-\item{type_check}{Type check function or type string.}
+\item{x}{A type check function or type string.}
 
 \item{default}{A default value.}
 }
 \value{
-A type check function
+A \code{\link[=model_field]{model_field()}}.
 }
 \description{
-Create a type check function
+Create a model field/type definition
 }

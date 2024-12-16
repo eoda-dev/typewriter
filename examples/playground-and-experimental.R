@@ -71,7 +71,7 @@ mtcars_model <- base_model(
     cyl = as.integer,
     gear = as.integer
   ),
-  .model_config = model_config(extra = "forbid")
+  .extra = "forbid"
 )
 
 mtcars_model(mtcars)
@@ -170,3 +170,32 @@ mt <- typed_struct(
 )
 
 mt(a = iris$Sepal.Length, b = TRUE)
+
+# ---
+a_cool_type <- typed_struct(
+  a = "integer",
+  b = optional("logical"),
+  x = optional(dtype("character", "1")),
+  y = optional(character(1))
+)
+
+a_cool_type(a = 1L, b = T, y= LETTERS[1:2])
+
+f_test <- function(a = dtype("integer", 10L)) {
+  check_args()
+  a
+}
+
+f_test(a = 1L)
+f_test()
+
+#
+my_struct <- typed_struct(
+  a = \(a) is.integer(a) & a > 2
+)
+
+my_struct(a = 3L)
+
+df <- data.frame(a = 4:9)
+
+my_struct(df)
