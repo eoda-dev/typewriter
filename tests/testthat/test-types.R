@@ -3,7 +3,7 @@ test_that("check is optional", {
   # Prepare
   my_model <- base_model(
     a = is.integer,
-    b = Optional(is.integer)
+    b = optional(is.integer)
   )
 
   # Act
@@ -21,8 +21,8 @@ test_that("fn from str", {
   value <- 1:5
 
   # Act
-  fn <- type_check_fn_from_str(dtype)
-  fn_scalar <- type_check_fn_from_str(dtype_scalar)
+  fn <- as_model_field(dtype)$fn
+  fn_scalar <- as_model_field(dtype_scalar)$fn
 
   # Assert
   expect_true(fn(value))

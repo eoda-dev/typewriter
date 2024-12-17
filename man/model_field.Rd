@@ -4,16 +4,27 @@
 \alias{model_field}
 \title{Create a model field}
 \usage{
-model_field(fn, default = NA, alias = NULL, error_msg = NULL, ...)
+model_field(
+  fn,
+  default = NA,
+  optional = FALSE,
+  alias = NULL,
+  error_msg = NULL,
+  ...
+)
 }
 \arguments{
 \item{fn}{A type check function.}
 
 \item{default}{A default value for the field.}
 
+\item{optional}{Whether the field is optional.}
+
 \item{alias}{alias that can be used in \code{\link[=model_dump]{model_dump()}}}
 
-\item{error_msg, ...}{\strong{not used} at the moment}
+\item{error_msg}{A custom error message.}
+
+\item{...}{\strong{not used} at the moment}
 }
 \value{
 A model field.

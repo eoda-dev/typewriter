@@ -7,12 +7,13 @@
 base_model(
   fields = list(),
   ...,
-  .model_config = model_config(),
   .model_pre_init = NULL,
   .model_post_init = NULL,
   .validators_before = list(),
   .validators_after = list(),
-  .strict_args_order = FALSE
+  .strict_args_order = FALSE,
+  .allow_na = FALSE,
+  .extra = c("ignore", "allow", "forbid")
 )
 }
 \arguments{
@@ -20,8 +21,6 @@ base_model(
 
 \item{...}{Named arguments of field definitions.
 Normally either \code{fields} or \code{...} is supplied.}
-
-\item{.model_config}{See \code{\link[=model_config]{model_config()}}.}
 
 \item{.model_pre_init}{A callback function that is executed before the type checks.}
 
@@ -36,6 +35,10 @@ that are executed after the type checks.}
 \item{.strict_args_order}{If set to \code{TRUE}, the \code{.x} parameter
 of the returned model factory function will be the last function argument.
 This is useful if you want to pass the arguments unnamed.}
+
+\item{.allow_na}{Whether to allow \code{NA} values for all fields.}
+
+\item{.extra}{Whether to allow extra fields without type check.}
 }
 \value{
 A model factory function.

@@ -4,10 +4,12 @@
 \alias{typed_struct}
 \title{Create a typed structure}
 \usage{
-typed_struct(...)
+typed_struct(..., .allow_na = FALSE)
 }
 \arguments{
-\item{...}{Type definitions (Type check functions)}
+\item{...}{Type definitions.}
+
+\item{.allow_na}{Allow values to be initialized with \code{NA}.}
 }
 \value{
 A type factory function.

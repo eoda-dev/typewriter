@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 library(typewriter)
 ```
 
-The goal of typewriter is to add type safety to your R code and it is inspired by [Pydantic](https://docs.pydantic.dev/). Under the hood, it mainly uses base R functions to keep its dependencies as low as possible. It lets you
+The goal of typewriter is to add type safety to your R code. Under the hood, it mainly uses base R functions to keep its dependencies as low as possible. It lets you
 
 * add types checks to your function arguments with `check_args()`
 * create typed structures with `typed_struct()` and `base_model()`
@@ -87,17 +87,26 @@ Person <- typed_struct(
   name = "character",
   age = "integer"
 )
+
+# R, alternate syntax
+Person <- typed_struct(
+  name = character(),
+  age = integer()
+)
 ```
 
 A typed structure could be used as input for a function:
 
 ```{r}
 say_hello_to <- function(person) {
+  stopifnot(inherits(person, "Person"))
   paste("Hello", person$name, "you are", person$age, "years old!")
 }
 
 hanna <- Person(name = "Hanna", age = 10L)
 say_hello_to(hanna)
+
+try(say_hello_to(list(name = "Peter", age = 20L)))
 ```
 
 You can also use it to validate a data frame:
@@ -114,25 +123,31 @@ df$id <- 1:2
 try(Person(df))
 ```
 
-A type can also be described as a function that takes the value to be validated as its only arguments and returns `TRUE` in case of success:
+A type can also be defined as a function that takes the value to be validated as its only argument and returns `TRUE` in case of success:
 
 ```{r}
 my_type <- typed_struct(
   a_number = is.integer,
-  some_text = is.character
+  some_text = is.character,
+  # Add a range check to y
+  y = function(y) {
+    is.integer(y) & y > 1 & y < 10
+  }
 )
 
 obj <- my_type(
   a_number = 1:2,
-  some_text = "typewriter"
+  some_text = "typewriter",
+  y = 5L
 )
 
 obj
 
 try(
   my_type(
-    a_number = NULL,
-    some_text = "typewriter"
+    a_number = 1L,
+    some_text = "typewriter",
+    y = 1L
   )
 )
 ```
@@ -174,7 +189,7 @@ As you can see in the example above you can also check the length of the value b
 
 ### The `base_model()` function
 
-Under the hood `typed_struct()` and `check_args()` uses `base_model()` that got its name from [Pydantic's](https://docs.pydantic.dev/) `BaseModel` class. It gives you further options like validating your inputs before the assignment:
+Under the hood `typed_struct()` and `check_args()` use `base_model()` that got its name from [Pydantic's](https://docs.pydantic.dev/) `BaseModel` class. It gives you further options like validating your inputs before the assignment:
 
 ```{r}
 my_model <- base_model(

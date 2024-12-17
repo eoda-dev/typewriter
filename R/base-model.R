@@ -7,28 +7,26 @@ model_fields <- function(model_fn) {
 #' Create a model field
 #' @param fn A type check function.
 #' @param default A default value for the field.
+#' @param optional Whether the field is optional.
 #' @param alias alias that can be used in [model_dump()]
-#' @param error_msg,... **not used** at the moment
+#' @param error_msg A custom error message.
+#' @param ... **not used** at the moment
 #' @returns A model field.
 #' @export
-model_field <- function(fn, default = NA, alias = NULL, error_msg = NULL, ...) {
-  # l <- as.list(environment())
-  # return(structure(c(l, list(...)), class = CLASS_MODEL_FIELD))
+model_field <- function(fn, default = NA, optional = FALSE, alias = NULL, error_msg = NULL, ...) {
   obj <- c(as.list(environment()), list(...))
   base_class <- class(obj)
   structure(obj, class = c(base_class, CLASS_MODEL_FIELD))
 }
 
 # ---
-#' Create a model config object
-#' @param extra Whether to allow extra fields without type check.
-#' @param str_to_lower Convert all strings to lower case.
-#' @param ... **not used** at the moment
-#' @returns A model config object that can be used in [base_model()].
-#' @example examples/api/model-config.R
-#' @export
-model_config <- function(extra = c("ignore", "allow", "forbid"),
-                         str_to_lower = FALSE, ...) {
+# #' Create a model config object
+# #' DEPRECATED
+# #' @param extra Whether to allow extra fields without type check.
+# #' @param ... **not used** at the moment
+# #' @returns A model config object that can be used in [base_model()].
+# #' @example examples/api/model-config.R
+model_config <- function(extra = c("ignore", "allow", "forbid"), ...) {
   obj <- c(as.list(environment()), list(...))
   obj$extra <- match.arg(extra)
   base_class <- class(obj)
@@ -40,7 +38,6 @@ model_config <- function(extra = c("ignore", "allow", "forbid"),
 #' @param fields A named list of field definitions.
 #' @param ... Named arguments of field definitions.
 #'  Normally either `fields` or `...` is supplied.
-#' @param .model_config See [model_config()].
 #' @param .model_pre_init A callback function that is executed before the type checks.
 #' @param .model_post_init A callback function that is executed after the type checks.
 #' @param .validators_before A named list of field validators
@@ -50,17 +47,21 @@ model_config <- function(extra = c("ignore", "allow", "forbid"),
 #' @param .strict_args_order If set to `TRUE`, the `.x` parameter
 #'  of the returned model factory function will be the last function argument.
 #'  This is useful if you want to pass the arguments unnamed.
+#' @param .allow_na Whether to allow `NA` values for all fields.
+#' @param .extra Whether to allow extra fields without type check.
 #' @returns A model factory function.
 #' @example examples/api/base-model.R
 #' @importFrom utils modifyList
 #' @export
 base_model <- function(fields = list(), ...,
-                       .model_config = model_config(),
                        .model_pre_init = NULL,
                        .model_post_init = NULL,
                        .validators_before = list(),
                        .validators_after = list(),
-                       .strict_args_order = FALSE) {
+                       .strict_args_order = FALSE,
+                       .allow_na = FALSE,
+                       .extra = c("ignore", "allow", "forbid")) {
+  .extra <- match.arg(.extra)
   fields <- modifyList(fields, list(...), keep.null = TRUE)
   fields <- Map(function(.x) {
     if (inherits(.x, CLASS_MODEL_FUNCTION)) {
@@ -72,17 +73,12 @@ base_model <- function(fields = list(), ...,
     }
 
     if (!inherits(.x, CLASS_MODEL_FIELD)) {
-      .x <- model_field(fn = .x)
-    }
-
-    if (is.character(.x$fn)) {
-      .x$fn <- type_check_fn_from_str(.x$fn)
+      .x <- as_model_field(.x)
     }
 
     return(.x)
   }, fields)
 
-  # model_args <- purrr::map(fields, ~ .x$default)
   model_args <- Map(function(x) x$default, fields)
   fn_args <- c(alist(.x = NULL), model_args, alist(... = ))
   if (.strict_args_order) {
@@ -108,24 +104,24 @@ base_model <- function(fields = list(), ...,
     }
 
     for (name in names(fields)) {
-      type_check_fn <- rlang::as_function(fields[[name]]$fn)
-      obj_value <- obj[[name]]
+      field <- fields[[name]]
+      check_type <- rlang::as_function(field$fn)
+      value <- obj[[name]]
+      if (.allow_na | field$optional) {
+        if (length(value) == 1L && is.na(value)) next()
+      }
 
-      if (!all(type_check_fn(obj_value))) {
+      if (!all(check_type(value))) {
         errors[[name]] <- list(
           name = name,
-          value = obj_value,
-          type_check_fn = type_check_fn
+          value = value,
+          type_check_fn = check_type,
+          msg = field$error_msg
         )
       }
     }
 
     obj <- validate_fields(obj, .validators_after)
-
-    if (.model_config$str_to_lower) {
-      # obj <- purrr::map_depth(obj, -1, str_to_lower)
-      obj <- map_depth_base(obj, -1, str_to_lower)
-    }
 
     if (length(errors) > 0) {
       msg <- paste0(map_type_check_errors(errors), collapse = "\n")
@@ -136,11 +132,11 @@ base_model <- function(fields = list(), ...,
       return(invisible(obj))
     }
 
-    if (.model_config$extra == "ignore") {
+    if (.extra == "ignore") {
       obj <- obj[names(fields)]
     }
 
-    if (.model_config$extra == "forbid") {
+    if (.extra == "forbid") {
       extra_fields <- !names(obj) %in% names(fields)
       if (any(extra_fields)) {
         stop("Forbidden field(s): ", paste(names(obj)[extra_fields], collapse = ", "))
@@ -221,11 +217,11 @@ print.typewriter <- function(x, ...) {
 
 # ---
 check_assignment <- function(x, name, value) {
-  fields <- model_fields(x)
-  type_check_fn <- rlang::as_function(fields[[name]]$fn)
-  fn_text <- get_fn_text(type_check_fn)
-  if (isFALSE(type_check_fn(value))) {
-    stop(paste0("Type check failed.\n", fn_text))
+  field <- model_fields(x)[[name]]
+  check_type <- rlang::as_function(field$fn)
+  error_msg <- ifelse(is_not_null(field$error_msg), glue::glue(field$error_msg), get_fn_text(check_type))
+  if (!check_type(value)) {
+    stop(paste0("Type check failed.\n", error_msg))
   }
 }
 

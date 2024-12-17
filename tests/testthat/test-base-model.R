@@ -180,7 +180,8 @@ test_that("allow extra fields", {
   my_model <- base_model(
     cyl = is.double,
     mpg = is.double,
-    .model_config = model_config(extra = "allow")
+    # .model_config = model_config(extra = "allow")
+    .extra = "allow"
   )
 
   # Act

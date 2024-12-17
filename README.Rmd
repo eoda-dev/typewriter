@@ -60,15 +60,17 @@ model_validate(df, my_model)
 df$id <- as.double(df$id)
 try(model_validate(df, my_model))
 
-# Models
-my_model <- base_model(
+# Typed structs
+my_type <- typed_struct(
   a = "integer",
   b = "integer"
 )
 
-(m <- my_model(a = 2L, b = 4L))
+(mt <- my_type(a = 2L, b = 4L))
 
-try(m$a <- 10.5)
+class(mt)
 
-try(my_model(a = 2L, b = 4.5))
+try(mt$a <- 10.5)
+
+try(my_type(a = 2L, b = 4.5))
 ```

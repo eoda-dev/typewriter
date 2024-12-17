@@ -10,6 +10,7 @@ get_fn_text <- function(fn) {
 # ---
 #' @importFrom utils capture.output str
 create_type_check_error_message <- function(error) {
+  name <- error$name
   value <- error$value
   value_text <- paste0(capture.output(str(value)), collapse = "\n")
   fn <- error$type_check_fn
@@ -22,12 +23,12 @@ create_type_check_error_message <- function(error) {
   class_text <- paste(class(value), collapse = ", ")
 
   msg <- c(
-    glue::glue("# ---\nType check failed for '{error$name}'"),
+    glue::glue("---\nType check failed for '{error$name}'"),
     paste("value:", value_text),
     paste("type:", typeof(value)),
     paste("class:", class_text),
     paste("length:", length(value)),
-    paste("expected:", fn_text)
+    ifelse(is.null(error$msg), paste("expected:", fn_text), glue::glue(error$msg))
   )
   return(msg)
 }

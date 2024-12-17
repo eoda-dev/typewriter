@@ -38,15 +38,13 @@ f(5L, 3L)
 ``` r
 try(f(5L, c(3L, 4L)))
 #> Error in base_model(fields)(.x = func_env) : Type check(s) failed
-#> # ---
+#> ---
 #> Type check failed for 'b'
 #> value:  int [1:2] 3 4
 #> type: integer
 #> class: integer
 #> length: 2
-#> expected: {
-#>     typeof(x) == "integer" & length(x) == 1L
-#> }
+#> value of 'b' must be of type integer(1)
 ```
 
 ``` r
@@ -74,26 +72,24 @@ model_validate(df, my_model)
 df$id <- as.double(df$id)
 try(model_validate(df, my_model))
 #> Error in model_fn(.x = obj) : Type check(s) failed
-#> # ---
+#> ---
 #> Type check failed for 'id'
 #> value:  num [1:3] 1 2 3
 #> type: double
 #> class: numeric
 #> length: 3
-#> expected: {
-#>     typeof(x) == "integer"
-#> }
+#> value of 'id' must be of type integer
 ```
 
 ``` r
 
-# Models
-my_model <- base_model(
+# Typed structs
+my_type <- typed_struct(
   a = "integer",
   b = "integer"
 )
 
-(m <- my_model(a = 2L, b = 4L))
+(mt <- my_type(a = 2L, b = 4L))
 #> $a
 #> [1] 2
 #> 
@@ -103,24 +99,26 @@ my_model <- base_model(
 
 ``` r
 
-try(m$a <- 10.5)
-#> Error in check_assignment(x, name, value) : Type check failed.
-#> {
-#>     typeof(x) == "integer"
-#> }
+class(mt)
+#> [1] "list"       "typewriter" "my_type"
 ```
 
 ``` r
 
-try(my_model(a = 2L, b = 4.5))
-#> Error in my_model(a = 2L, b = 4.5) : Type check(s) failed
-#> # ---
+try(mt$a <- 10.5)
+#> Error in check_assignment(x, name, value) : Type check failed.
+#> value of 'a' must be of type integer
+```
+
+``` r
+
+try(my_type(a = 2L, b = 4.5))
+#> Error in my_type(a = 2L, b = 4.5) : Type check(s) failed
+#> ---
 #> Type check failed for 'b'
 #> value:  num 4.5
 #> type: double
 #> class: numeric
 #> length: 1
-#> expected: {
-#>     typeof(x) == "integer"
-#> }
+#> value of 'b' must be of type integer
 ```
