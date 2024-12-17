@@ -48,7 +48,7 @@ create_model_field <- function(
     base_fn <- is_logical
   }
 
-  error_msg <- paste("value of '{error$name}' must be of type", dtype)
+  error_msg <- paste("value of '{name}' must be of type", dtype)
   check_type <- base_fn
   if (is_not_null(n)) {
     error_msg <- paste0(error_msg, "(", n, ")")

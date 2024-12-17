@@ -10,6 +10,7 @@ get_fn_text <- function(fn) {
 # ---
 #' @importFrom utils capture.output str
 create_type_check_error_message <- function(error) {
+  name <- error$name
   value <- error$value
   value_text <- paste0(capture.output(str(value)), collapse = "\n")
   fn <- error$type_check_fn

@@ -219,7 +219,7 @@ print.typewriter <- function(x, ...) {
 check_assignment <- function(x, name, value) {
   field <- model_fields(x)[[name]]
   check_type <- rlang::as_function(field$fn)
-  error_msg <- ifelse(is_not_null(field$error_msg), field$error_msg, get_fn_text(check_type))
+  error_msg <- ifelse(is_not_null(field$error_msg), glue::glue(field$error_msg), get_fn_text(check_type))
   if (!check_type(value)) {
     stop(paste0("Type check failed.\n", error_msg))
   }
