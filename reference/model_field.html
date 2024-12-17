@@ -40,7 +40,14 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">model_field</span><span class="op">(</span><span class="va">fn</span>, default <span class="op">=</span> <span class="cn">NA</span>, alias <span class="op">=</span> <span class="cn">NULL</span>, error_msg <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">model_field</span><span class="op">(</span></span>
+<span>  <span class="va">fn</span>,</span>
+<span>  default <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  optional <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  alias <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  error_msg <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -55,11 +62,19 @@
 <dd><p>A default value for the field.</p></dd>
 
 
+<dt id="arg-optional">optional<a class="anchor" aria-label="anchor" href="#arg-optional"></a></dt>
+<dd><p>Whether the field is optional.</p></dd>
+
+
 <dt id="arg-alias">alias<a class="anchor" aria-label="anchor" href="#arg-alias"></a></dt>
 <dd><p>alias that can be used in <code><a href="model_dump.html">model_dump()</a></code></p></dd>
 
 
-<dt id="arg-error-msg-">error_msg, ...<a class="anchor" aria-label="anchor" href="#arg-error-msg-"></a></dt>
+<dt id="arg-error-msg">error_msg<a class="anchor" aria-label="anchor" href="#arg-error-msg"></a></dt>
+<dd><p>A custom error message.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p><strong>not used</strong> at the moment</p></dd>
 
 </dl></div>

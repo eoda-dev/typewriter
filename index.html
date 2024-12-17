@@ -78,15 +78,13 @@
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/try.html" class="external-link">try</a></span><span class="op">(</span><span class="fu">f</span><span class="op">(</span><span class="fl">5L</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3L</span>, <span class="fl">4L</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Error in base_model(fields)(.x = func_env) : Type check(s) failed</span></span>
-<span><span class="co">#&gt; # ---</span></span>
+<span><span class="co">#&gt; ---</span></span>
 <span><span class="co">#&gt; Type check failed for 'b'</span></span>
 <span><span class="co">#&gt; value:  int [1:2] 3 4</span></span>
 <span><span class="co">#&gt; type: integer</span></span>
 <span><span class="co">#&gt; class: integer</span></span>
 <span><span class="co">#&gt; length: 2</span></span>
-<span><span class="co">#&gt; expected: {</span></span>
-<span><span class="co">#&gt;     typeof(x) == "integer" &amp; length(x) == 1L</span></span>
-<span><span class="co">#&gt; }</span></span></code></pre></div>
+<span><span class="co">#&gt; value of 'b' must be of type integer(1)</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Data frames</span></span>
@@ -110,24 +108,22 @@
 <span><span class="va">df</span><span class="op">$</span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/double.html" class="external-link">as.double</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/try.html" class="external-link">try</a></span><span class="op">(</span><span class="fu"><a href="reference/model_validate.html">model_validate</a></span><span class="op">(</span><span class="va">df</span>, <span class="va">my_model</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Error in model_fn(.x = obj) : Type check(s) failed</span></span>
-<span><span class="co">#&gt; # ---</span></span>
+<span><span class="co">#&gt; ---</span></span>
 <span><span class="co">#&gt; Type check failed for 'id'</span></span>
 <span><span class="co">#&gt; value:  num [1:3] 1 2 3</span></span>
 <span><span class="co">#&gt; type: double</span></span>
 <span><span class="co">#&gt; class: numeric</span></span>
 <span><span class="co">#&gt; length: 3</span></span>
-<span><span class="co">#&gt; expected: {</span></span>
-<span><span class="co">#&gt;     typeof(x) == "integer"</span></span>
-<span><span class="co">#&gt; }</span></span></code></pre></div>
+<span><span class="co">#&gt; value of 'id' must be of type integer</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="co"># Models</span></span>
-<span><span class="va">my_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/base_model.html">base_model</a></span><span class="op">(</span></span>
+<span><span class="co"># Typed structs</span></span>
+<span><span class="va">my_type</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/typed_struct.html">typed_struct</a></span><span class="op">(</span></span>
 <span>  a <span class="op">=</span> <span class="st">"integer"</span>,</span>
 <span>  b <span class="op">=</span> <span class="st">"integer"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="op">(</span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu">my_model</span><span class="op">(</span>a <span class="op">=</span> <span class="fl">2L</span>, b <span class="op">=</span> <span class="fl">4L</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">(</span><span class="va">mt</span> <span class="op">&lt;-</span> <span class="fu">my_type</span><span class="op">(</span>a <span class="op">=</span> <span class="fl">2L</span>, b <span class="op">=</span> <span class="fl">4L</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $a</span></span>
 <span><span class="co">#&gt; [1] 2</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -135,24 +131,24 @@
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/try.html" class="external-link">try</a></span><span class="op">(</span><span class="va">m</span><span class="op">$</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fl">10.5</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in check_assignment(x, name, value) : Type check failed.</span></span>
-<span><span class="co">#&gt; {</span></span>
-<span><span class="co">#&gt;     typeof(x) == "integer"</span></span>
-<span><span class="co">#&gt; }</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">mt</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "list"       "typewriter" "my_type"</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/try.html" class="external-link">try</a></span><span class="op">(</span><span class="fu">my_model</span><span class="op">(</span>a <span class="op">=</span> <span class="fl">2L</span>, b <span class="op">=</span> <span class="fl">4.5</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in my_model(a = 2L, b = 4.5) : Type check(s) failed</span></span>
-<span><span class="co">#&gt; # ---</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/try.html" class="external-link">try</a></span><span class="op">(</span><span class="va">mt</span><span class="op">$</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fl">10.5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in check_assignment(x, name, value) : Type check failed.</span></span>
+<span><span class="co">#&gt; value of 'a' must be of type integer</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/try.html" class="external-link">try</a></span><span class="op">(</span><span class="fu">my_type</span><span class="op">(</span>a <span class="op">=</span> <span class="fl">2L</span>, b <span class="op">=</span> <span class="fl">4.5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in my_type(a = 2L, b = 4.5) : Type check(s) failed</span></span>
+<span><span class="co">#&gt; ---</span></span>
 <span><span class="co">#&gt; Type check failed for 'b'</span></span>
 <span><span class="co">#&gt; value:  num 4.5</span></span>
 <span><span class="co">#&gt; type: double</span></span>
 <span><span class="co">#&gt; class: numeric</span></span>
 <span><span class="co">#&gt; length: 1</span></span>
-<span><span class="co">#&gt; expected: {</span></span>
-<span><span class="co">#&gt;     typeof(x) == "integer"</span></span>
-<span><span class="co">#&gt; }</span></span></code></pre></div>
+<span><span class="co">#&gt; value of 'b' must be of type integer</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
