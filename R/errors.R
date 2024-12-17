@@ -27,7 +27,7 @@ create_type_check_error_message <- function(error) {
     paste("type:", typeof(value)),
     paste("class:", class_text),
     paste("length:", length(value)),
-    ifelse(is.null(error$msg), paste("expected:", fn_text), error$msg)
+    ifelse(is.null(error$msg), paste("expected:", fn_text), glue::glue(error$msg))
   )
   return(msg)
 }

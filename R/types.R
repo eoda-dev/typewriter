@@ -18,14 +18,6 @@
 is_any <- function(x) TRUE
 
 # ---
-# DEPRECATED
-#Any <- function(n = NULL) {
-#  if (is.null(x)) {
-#    return(is_any)
-#  }
-#  return(function(x) length(x) == n)
-#}
-
 #' Type predicate `typewriter model`
 #' @param model_fn A model factory function created with [base_model()].
 #' @export
@@ -56,7 +48,7 @@ create_model_field <- function(
     base_fn <- is_logical
   }
 
-  error_msg <- paste("value must be of type", dtype)
+  error_msg <- paste("value of '{error$name}' must be of type", dtype)
   check_type <- base_fn
   if (is_not_null(n)) {
     error_msg <- paste0(error_msg, "(", n, ")")
